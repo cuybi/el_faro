@@ -24,6 +24,8 @@
   let adminPass = localStorage.getItem(PASS_KEY) || 'ElFaro2026!';
 
   function bootAdmin() {
+    checkServerConnection();
+    setInterval(checkServerConnection, 10000);
     checkAuthStatus();
     setupLoginHandler();
   }
@@ -34,37 +36,73 @@
     bootAdmin();
   }
 
+  // Monitor real-time connection with Node.js backend
+  window.checkServerConnection = async function() {
+    const badge = document.getElementById('serverStatusBadge');
+    const text = document.getElementById('serverStatusText');
+    if (!badge || !text) return false;
+
+    try {
+      const res = await fetch('/api/server-status', { cache: 'no-store' });
+      if (res.ok) {
+        badge.style.background = 'rgba(39, 201, 63, 0.15)';
+        badge.style.borderColor = 'rgba(39, 201, 63, 0.4)';
+        badge.style.color = '#27c93f';
+        text.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 4px;"></i> Servidor Conectado (Guardado en Disco Activo)';
+        return true;
+      }
+    } catch (_) {}
+
+    badge.style.background = 'rgba(255, 95, 86, 0.15)';
+    badge.style.borderColor = 'rgba(255, 95, 86, 0.4)';
+    badge.style.color = '#ff5f56';
+    text.innerHTML = '<i class="fas fa-exclamation-triangle" style="margin-right: 4px;"></i> Servidor Desconectado (Solo Local)';
+    return false;
+  };
+
   // ponytail: listen to cmsDataReady custom event from cms-loader.js to avoid initial race conditions
   document.addEventListener('cmsDataReady', () => {
-    if (sessionStorage.getItem(AUTH_KEY) === 'true' || localStorage.getItem(AUTH_KEY) === 'true') {
+    const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
+    if (token || sessionStorage.getItem(AUTH_KEY) === 'true') {
       try { initDashboard(); } catch(e) { console.warn(e); }
     }
   });
 
   async function checkAuthStatus() {
-    const token = sessionStorage.getItem('elfaro_admin_token');
-    const isLogged = sessionStorage.getItem(AUTH_KEY) === 'true' || localStorage.getItem(AUTH_KEY) === 'true';
+    const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
+    const hasLoggedFlag = sessionStorage.getItem(AUTH_KEY) === 'true' || localStorage.getItem(AUTH_KEY) === 'true';
     const overlay = document.getElementById('loginOverlay');
     const dashboard = document.getElementById('adminDashboard');
 
+    // If a token is stored, verify its signature with the server
     if (token) {
       try {
         const verifyRes = await fetch('/api/admin/verify-token', {
-          headers: { 'Authorization': 'Bearer ' + token }
+          headers: { 'Authorization': 'Bearer ' + token },
+          cache: 'no-store'
         });
-        if (!verifyRes.ok) {
+        if (verifyRes.ok) {
+          sessionStorage.setItem('elfaro_admin_token', token);
+          localStorage.setItem('elfaro_admin_token', token);
+          sessionStorage.setItem(AUTH_KEY, 'true');
+          localStorage.setItem(AUTH_KEY, 'true');
+        } else {
+          // Token expired or invalid: require clean re-login
           sessionStorage.removeItem('elfaro_admin_token');
           sessionStorage.removeItem(AUTH_KEY);
+          localStorage.removeItem('elfaro_admin_token');
           localStorage.removeItem(AUTH_KEY);
           if (overlay) overlay.style.display = 'flex';
           if (dashboard) dashboard.style.display = 'none';
           return;
         }
       } catch (err) {
-        // Offline / server not running: proceed with local session
+        // Server offline: allow offline session if flag exists
+        console.warn('Servidor offline al verificar token:', err.message);
       }
     }
 
+    const isLogged = hasLoggedFlag && (token || !window.location.protocol.startsWith('http'));
     if (isLogged) {
       if (overlay) overlay.style.display = 'none';
       if (dashboard) dashboard.style.display = 'flex';
@@ -98,10 +136,12 @@
         const result = await resp.json();
         if (result.token) {
           sessionStorage.setItem('elfaro_admin_token', result.token);
+          localStorage.setItem('elfaro_admin_token', result.token);
           sessionStorage.setItem(AUTH_KEY, 'true');
           localStorage.setItem(AUTH_KEY, 'true');
           if (errorEl) errorEl.style.display = 'none';
           checkAuthStatus();
+          checkServerConnection();
           showToast('¡Bienvenido al Panel de Administración!');
           return false;
         }
@@ -121,7 +161,7 @@
         localStorage.setItem(AUTH_KEY, 'true');
         if (errorEl) errorEl.style.display = 'none';
         checkAuthStatus();
-        showToast('Modo sin conexión: sesión local iniciada.');
+        showToast('Modo sin conexión: sesión local iniciada.', 'warning');
         return false;
       } else {
         if (errorEl) {
@@ -141,6 +181,7 @@
 
   window.logout = function() {
     sessionStorage.removeItem('elfaro_admin_token');
+    localStorage.removeItem('elfaro_admin_token');
     sessionStorage.removeItem(AUTH_KEY);
     localStorage.removeItem(AUTH_KEY);
     checkAuthStatus();
@@ -246,11 +287,74 @@
     `).join('');
   }
 
+  let pendingImageUpload = null;
+
+  window.handleImageFileSelect = function(e) {
+    const file = e.target.files && e.target.files[0];
+    const previewBox = document.getElementById('newImgPreviewBox');
+    const previewImg = document.getElementById('newImgPreviewImg');
+    const urlInput = document.getElementById('newImgUrl');
+
+    if (!file) {
+      pendingImageUpload = null;
+      if (previewBox) previewBox.style.display = 'none';
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      alert('La imagen seleccionada supera el límite máximo permitido de 15MB.');
+      e.target.value = '';
+      pendingImageUpload = null;
+      if (previewBox) previewBox.style.display = 'none';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      pendingImageUpload = {
+        name: file.name,
+        data: evt.target.result
+      };
+      if (previewImg) previewImg.src = evt.target.result;
+      if (previewBox) previewBox.style.display = 'block';
+      if (urlInput) urlInput.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.handleImageUrlInput = function(val) {
+    const previewBox = document.getElementById('newImgPreviewBox');
+    const previewImg = document.getElementById('newImgPreviewImg');
+    const fileInput = document.getElementById('newImgFile');
+
+    const cleanVal = (val || '').trim();
+    if (cleanVal) {
+      pendingImageUpload = null;
+      if (fileInput) fileInput.value = '';
+      if (previewImg) previewImg.src = cleanVal;
+      if (previewBox) previewBox.style.display = 'block';
+    } else {
+      if (!pendingImageUpload && previewBox) {
+        previewBox.style.display = 'none';
+      }
+    }
+  };
+
   window.openAddImageModal = function() {
     const modal = document.getElementById('modalAddImage');
     if (modal) {
       const form = modal.querySelector('form');
       if (form) form.reset();
+      pendingImageUpload = null;
+      const previewBox = document.getElementById('newImgPreviewBox');
+      const previewImg = document.getElementById('newImgPreviewImg');
+      if (previewBox) previewBox.style.display = 'none';
+      if (previewImg) previewImg.src = '';
+      const btn = document.getElementById('btnPublishImage');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> PUBLICAR FOTO EN GALERÍA';
+      }
       modal.style.display = 'flex';
     }
   };
@@ -275,39 +379,110 @@
     }
   });
 
-  window.saveNewImage = function(e) {
-    e.preventDefault();
-    const title = document.getElementById('newImgTitle').value.trim();
-    const category = document.getElementById('newImgCategory').value;
-    const imageUrl = document.getElementById('newImgUrl').value.trim();
+  window.saveNewImage = async function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
 
-    if (!title || !imageUrl) return;
+    const titleEl = document.getElementById('newImgTitle');
+    const catEl = document.getElementById('newImgCategory');
+    const urlEl = document.getElementById('newImgUrl');
+    const publishBtn = document.getElementById('btnPublishImage');
 
-    const newImg = {
-      id: 'img-' + Date.now(),
-      title: title,
-      category: category,
-      imageUrl: imageUrl,
-      date: new Date().toISOString().split('T')[0]
-    };
+    const title = (titleEl ? titleEl.value : '').trim();
+    const category = catEl ? catEl.value : 'adoracion';
+    let imageUrl = (urlEl ? urlEl.value : '').trim();
 
-    window.CMSData.galleryImages = window.CMSData.galleryImages || [];
-    window.CMSData.galleryImages.unshift(newImg);
-    window.saveCMSData(window.CMSData);
+    if (!title) {
+      showToast('Por favor ingresa un título para la foto.', 'warning');
+      return;
+    }
 
-    if (e.target && e.target.reset) e.target.reset();
-    closeModal('modalAddImage');
-    initDashboard();
-    showToast('Foto publicada con éxito en la galería.');
+    if (!pendingImageUpload && !imageUrl) {
+      showToast('Debes seleccionar una foto de tu equipo o ingresar una URL.', 'warning');
+      return;
+    }
+
+    if (publishBtn) {
+      publishBtn.disabled = true;
+      publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo imagen al servidor...';
+    }
+
+    try {
+      // 1. Si seleccionó un archivo local, subirlo a assets/img/ en el servidor
+      if (pendingImageUpload) {
+        const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
+        const uploadResp = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + (token || '')
+          },
+          body: JSON.stringify({
+            fileName: pendingImageUpload.name,
+            fileData: pendingImageUpload.data
+          })
+        });
+
+        if (!uploadResp.ok) {
+          const errData = await uploadResp.json().catch(() => ({}));
+          throw new Error(errData.error || `Error al subir imagen (${uploadResp.status})`);
+        }
+
+        const uploadResult = await uploadResp.json();
+        imageUrl = uploadResult.url;
+      }
+
+      // 2. Insertar imagen en CMSData
+      const newImg = {
+        id: 'img-' + Date.now(),
+        title: title,
+        category: category,
+        imageUrl: imageUrl,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      window.CMSData = window.CMSData || {};
+      window.CMSData.galleryImages = window.CMSData.galleryImages || [];
+      window.CMSData.galleryImages.unshift(newImg);
+
+      // 3. Guardar y sincronizar con servidor
+      const syncResult = await window.saveCMSData(window.CMSData);
+
+      // 4. Reset & Limpieza
+      pendingImageUpload = null;
+      if (e.target && e.target.reset) e.target.reset();
+      closeModal('modalAddImage');
+      initDashboard();
+
+      if (syncResult && syncResult.serverSynced) {
+        showToast('¡Foto subida y guardada en disco permanentemente!', 'success');
+      } else {
+        showToast('Foto guardada en caché local (servidor desconectado).', 'warning');
+      }
+    } catch (err) {
+      console.error('[CMS Image Upload Error]:', err);
+      showToast('Error al publicar foto: ' + err.message, 'error');
+    } finally {
+      if (publishBtn) {
+        publishBtn.disabled = false;
+        publishBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> PUBLICAR FOTO EN GALERÍA';
+      }
+    }
   };
 
-  window.deleteImage = function(id) {
+  window.deleteImage = async function(id) {
     if (!confirm('¿Estás seguro de eliminar esta foto?')) return;
     window.CMSData = window.CMSData || {};
     window.CMSData.galleryImages = (window.CMSData.galleryImages || []).filter(img => img.id !== id);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     initDashboard();
-    showToast('Foto eliminada.');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('Foto eliminada permanentemente del servidor.', 'success');
+    } else {
+      showToast('Foto eliminada en caché local.', 'warning');
+    }
   };
 
   // --- VIDEOS CRUD ---
@@ -357,8 +532,11 @@
     }
   };
 
-  window.saveNewVideo = function(e) {
-    e.preventDefault();
+  window.saveNewVideo = async function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     const title = document.getElementById('newVidTitle').value.trim();
     const platform = document.getElementById('newVidPlatform').value;
     const preacher = document.getElementById('newVidPreacher').value.trim();
@@ -393,14 +571,21 @@
       featured: false
     };
 
+    window.CMSData = window.CMSData || {};
     window.CMSData.videos = window.CMSData.videos || [];
     window.CMSData.videos.unshift(newVid);
-    window.saveCMSData(window.CMSData);
+    
+    const syncResult = await window.saveCMSData(window.CMSData);
 
     if (e.target && e.target.reset) e.target.reset();
     closeModal('modalAddVideo');
     initDashboard();
-    showToast(`Video de ${platform.toUpperCase()} guardado con éxito.`);
+
+    if (syncResult && syncResult.serverSynced) {
+      showToast(`Video de ${platform.toUpperCase()} guardado en disco con éxito.`, 'success');
+    } else {
+      showToast(`Video guardado en caché local (servidor desconectado).`, 'warning');
+    }
   };
 
   function extractYouTubeId(url) {
@@ -409,12 +594,16 @@
     return (match && match[2].length === 11) ? match[2] : url;
   }
 
-  window.deleteVideo = function(id) {
+  window.deleteVideo = async function(id) {
     if (!confirm('¿Estás seguro de eliminar este video?')) return;
-    window.CMSData.videos = window.CMSData.videos.filter(vid => vid.id !== id);
-    window.saveCMSData(window.CMSData);
+    window.CMSData.videos = (window.CMSData.videos || []).filter(vid => vid.id !== id);
+    const syncResult = await window.saveCMSData(window.CMSData);
     initDashboard();
-    showToast('Video eliminado.');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('Video eliminado permanentemente del servidor.', 'success');
+    } else {
+      showToast('Video eliminado en caché local.', 'warning');
+    }
   };
 
   // --- FORMS POPULATION & SAVE ---
@@ -502,73 +691,123 @@
     }
   }
 
-  window.saveBankData = function(e) {
-    e.preventDefault();
-    window.CMSData.bankInfo = window.CMSData.bankInfo || {};
-    window.CMSData.bankInfo.bankName = document.getElementById('bankName').value.trim();
-    window.CMSData.bankInfo.accountName = document.getElementById('accountName').value.trim();
-    window.CMSData.bankInfo.accountNumber = document.getElementById('accountNumber').value.trim();
-    if (document.getElementById('accountType')) {
-      window.CMSData.bankInfo.accountType = document.getElementById('accountType').value.trim();
+  window.saveBankData = async function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
     }
-    window.CMSData.bankInfo.nit = document.getElementById('bankNit').value.trim();
-    window.CMSData.bankInfo.qrImage = document.getElementById('qrImage').value.trim();
-    if (document.getElementById('bankFeaturedVerse')) {
-      window.CMSData.bankInfo.featuredVerse = document.getElementById('bankFeaturedVerse').value.trim();
-    }
-    if (document.getElementById('bankVerseRef')) {
-      window.CMSData.bankInfo.verseReference = document.getElementById('bankVerseRef').value.trim();
+    const submitBtn = e.target ? e.target.querySelector('button[type="submit"]') : null;
+    const oldBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     }
 
-    window.saveCMSData(window.CMSData);
-    showToast('Datos bancarios y QR guardados con éxito.');
+    try {
+      window.CMSData = window.CMSData || {};
+      window.CMSData.bankInfo = window.CMSData.bankInfo || {};
+      window.CMSData.bankInfo.bankName = document.getElementById('bankName').value.trim();
+      window.CMSData.bankInfo.accountName = document.getElementById('accountName').value.trim();
+      window.CMSData.bankInfo.accountNumber = document.getElementById('accountNumber').value.trim();
+      if (document.getElementById('accountType')) {
+        window.CMSData.bankInfo.accountType = document.getElementById('accountType').value.trim();
+      }
+      window.CMSData.bankInfo.nit = document.getElementById('bankNit').value.trim();
+      window.CMSData.bankInfo.qrImage = document.getElementById('qrImage').value.trim();
+      if (document.getElementById('bankFeaturedVerse')) {
+        window.CMSData.bankInfo.featuredVerse = document.getElementById('bankFeaturedVerse').value.trim();
+      }
+      if (document.getElementById('bankVerseRef')) {
+        window.CMSData.bankInfo.verseReference = document.getElementById('bankVerseRef').value.trim();
+      }
+
+      const syncResult = await window.saveCMSData(window.CMSData);
+      if (syncResult && syncResult.serverSynced) {
+        showToast('Datos bancarios y QR guardados en disco permanentemente.', 'success');
+      } else {
+        showToast('Datos bancarios guardados en local (servidor desconectado).', 'warning');
+      }
+    } catch (err) {
+      console.error('[Bank Save Error]:', err);
+      showToast('Error al guardar datos bancarios: ' + err.message, 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = oldBtnHtml;
+      }
+    }
   };
 
-  window.saveTextsData = function(e) {
-    e.preventDefault();
-    window.CMSData = window.CMSData || {};
+  window.saveTextsData = async function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    const submitBtn = e.target ? e.target.querySelector('button[type="submit"]') : null;
+    const oldBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    }
 
-    // Save Navigation Texts
-    window.CMSData.navTexts = {
-      home: document.getElementById('navTextHome').value.trim(),
-      growth: document.getElementById('navTextGrowth').value.trim(),
-      church: document.getElementById('navTextChurch').value.trim(),
-      events: document.getElementById('navTextEvents').value.trim(),
-      ministries: document.getElementById('navTextMinistries').value.trim(),
-      subMatrimonios: document.getElementById('navSubMatrimonios').value.trim(),
-      subServicio: document.getElementById('navSubServicio').value.trim(),
-      subJovenes: document.getElementById('navSubJovenes').value.trim(),
-      subNinos: document.getElementById('navSubNinos').value.trim(),
-      subAdolescentes: document.getElementById('navSubAdolescentes').value.trim(),
-      subIntercesion: document.getElementById('navSubIntercesion').value.trim(),
-      subAdoracion: document.getElementById('navSubAdoracion').value.trim(),
-      subEducacion: document.getElementById('navSubEducacion').value.trim(),
-      subDamas: document.getElementById('navSubDamas').value.trim(),
-      subDaniel: document.getElementById('navSubDaniel').value.trim(),
-      sermons: document.getElementById('navTextSermons').value.trim(),
-      subVideos: document.getElementById('navSubVideos').value.trim(),
-      subImages: document.getElementById('navSubImages').value.trim(),
-      contact: document.getElementById('navTextContact').value.trim(),
-      donations: document.getElementById('navTextDonations').value.trim()
-    };
+    try {
+      window.CMSData = window.CMSData || {};
 
-    // Save Site Section Texts
-    window.CMSData.siteTexts = window.CMSData.siteTexts || {};
-    window.CMSData.siteTexts.heroTitle = document.getElementById('stHeroTitle').value.trim();
-    window.CMSData.siteTexts.heroSubtitle = document.getElementById('stHeroSubtitle').value.trim();
-    window.CMSData.siteTexts.aboutTitle = document.getElementById('stAboutTitle').value.trim();
-    window.CMSData.siteTexts.aboutText = document.getElementById('stAboutText').value.trim();
-    window.CMSData.siteTexts.growthTitle = document.getElementById('stGrowthTitle').value.trim();
-    window.CMSData.siteTexts.ministriesTitle = document.getElementById('stMinistriesTitle').value.trim();
-    window.CMSData.siteTexts.ministriesText = document.getElementById('stMinistriesText').value.trim();
-    window.CMSData.siteTexts.phone = document.getElementById('stPhone').value.trim();
-    window.CMSData.siteTexts.whatsapp = document.getElementById('stPhone').value.trim();
-    window.CMSData.siteTexts.email = document.getElementById('stEmail').value.trim();
-    window.CMSData.siteTexts.address = document.getElementById('stAddress').value.trim();
-    window.CMSData.siteTexts.serviceHours = document.getElementById('stServiceHours').value.trim();
+      // Save Navigation Texts
+      window.CMSData.navTexts = {
+        home: document.getElementById('navTextHome').value.trim(),
+        growth: document.getElementById('navTextGrowth').value.trim(),
+        church: document.getElementById('navTextChurch').value.trim(),
+        events: document.getElementById('navTextEvents').value.trim(),
+        ministries: document.getElementById('navTextMinistries').value.trim(),
+        subMatrimonios: document.getElementById('navSubMatrimonios').value.trim(),
+        subServicio: document.getElementById('navSubServicio').value.trim(),
+        subJovenes: document.getElementById('navSubJovenes').value.trim(),
+        subNinos: document.getElementById('navSubNinos').value.trim(),
+        subAdolescentes: document.getElementById('navSubAdolescentes').value.trim(),
+        subIntercesion: document.getElementById('navSubIntercesion').value.trim(),
+        subAdoracion: document.getElementById('navSubAdoracion').value.trim(),
+        subEducacion: document.getElementById('navSubEducacion').value.trim(),
+        subDamas: document.getElementById('navSubDamas').value.trim(),
+        subDaniel: document.getElementById('navSubDaniel').value.trim(),
+        sermons: document.getElementById('navTextSermons').value.trim(),
+        subVideos: document.getElementById('navSubVideos').value.trim(),
+        subImages: document.getElementById('navSubImages').value.trim(),
+        contact: document.getElementById('navTextContact').value.trim(),
+        donations: document.getElementById('navTextDonations').value.trim()
+      };
 
-    window.saveCMSData(window.CMSData);
-    showToast('¡Todos los textos y menús del sitio actualizados!');
+      // Save Site Section Texts
+      window.CMSData.siteTexts = window.CMSData.siteTexts || {};
+      window.CMSData.heroTitle = document.getElementById('stHeroTitle').value.trim();
+      window.CMSData.siteTexts.heroTitle = document.getElementById('stHeroTitle').value.trim();
+      window.CMSData.siteTexts.heroSubtitle = document.getElementById('stHeroSubtitle').value.trim();
+      window.CMSData.siteTexts.aboutTitle = document.getElementById('stAboutTitle').value.trim();
+      window.CMSData.siteTexts.aboutText = document.getElementById('stAboutText').value.trim();
+      window.CMSData.siteTexts.growthTitle = document.getElementById('stGrowthTitle').value.trim();
+      window.CMSData.siteTexts.ministriesTitle = document.getElementById('stMinistriesTitle').value.trim();
+      window.CMSData.siteTexts.ministriesText = document.getElementById('stMinistriesText').value.trim();
+      window.CMSData.siteTexts.phone = document.getElementById('stPhone').value.trim();
+      window.CMSData.siteTexts.whatsapp = document.getElementById('stPhone').value.trim();
+      window.CMSData.siteTexts.email = document.getElementById('stEmail').value.trim();
+      window.CMSData.siteTexts.address = document.getElementById('stAddress').value.trim();
+      window.CMSData.siteTexts.serviceHours = document.getElementById('stServiceHours').value.trim();
+
+      const syncResult = await window.saveCMSData(window.CMSData);
+      if (syncResult && syncResult.serverSynced) {
+        showToast('¡Textos y menús actualizados y guardados en disco!', 'success');
+      } else {
+        showToast('Textos guardados en local (servidor desconectado).', 'warning');
+      }
+    } catch (err) {
+      console.error('[Texts Save Error]:', err);
+      showToast('Error al guardar textos: ' + err.message, 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = oldBtnHtml;
+      }
+    }
   };
 
   window.clearField = function(fieldId) {
@@ -802,29 +1041,37 @@
     showToast('¡Nueva cita de prueba agregada a la bandeja!');
   };
 
-  window.toggleAppointmentStatus = function(id) {
+  window.toggleAppointmentStatus = async function(id) {
     window.CMSData = window.CMSData || {};
     window.CMSData.appointments = window.CMSData.appointments || [];
     const app = window.CMSData.appointments.find(a => a.id === id);
     if (app) {
       app.status = app.status === 'Confirmada' ? 'Pendiente' : 'Confirmada';
-      window.saveCMSData(window.CMSData);
+      const syncResult = await window.saveCMSData(window.CMSData);
       renderInboxTables();
-      showToast(`Cita marcada como ${app.status}.`);
+      if (syncResult && syncResult.serverSynced) {
+        showToast(`Cita marcada como ${app.status} (guardado en servidor).`, 'success');
+      } else {
+        showToast(`Cita marcada como ${app.status} (guardado local).`, 'warning');
+      }
     }
   };
 
-  window.deleteAppointment = function(id) {
+  window.deleteAppointment = async function(id) {
     if (!confirm('¿Estás seguro de eliminar esta cita?')) return;
     window.CMSData = window.CMSData || {};
     window.CMSData.appointments = (window.CMSData.appointments || []).filter(a => a.id !== id);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     renderInboxTables();
-    showToast('Cita eliminada.');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('Cita eliminada permanentemente del servidor.', 'success');
+    } else {
+      showToast('Cita eliminada en caché local.', 'warning');
+    }
   };
 
   // --- SAMPLE DATA GENERATORS FOR INBOX ---
-  window.addSamplePrayer = function() {
+  window.addSamplePrayer = async function() {
     window.CMSData = window.CMSData || {};
     window.CMSData.prayers = window.CMSData.prayers || [];
     const samples = [
@@ -837,12 +1084,16 @@
     picked.date = new Date().toISOString();
 
     window.CMSData.prayers.unshift(picked);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     renderInboxTables();
-    showToast('¡Nueva petición de oración agregada a la bandeja!');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('¡Nueva petición de prueba guardada en servidor!', 'success');
+    } else {
+      showToast('Petición de prueba guardada localmente.', 'warning');
+    }
   };
 
-  window.addSampleContribution = function() {
+  window.addSampleContribution = async function() {
     window.CMSData = window.CMSData || {};
     window.CMSData.contributions = window.CMSData.contributions || [];
     const samples = [
@@ -855,27 +1106,39 @@
     picked.date = new Date().toISOString();
 
     window.CMSData.contributions.unshift(picked);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     renderInboxTables();
-    showToast('¡Nuevo registro de diezmo agregado a la bandeja!');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('¡Nuevo registro de diezmo guardado en servidor!', 'success');
+    } else {
+      showToast('Registro de diezmo guardado localmente.', 'warning');
+    }
   };
 
-  window.deletePrayer = function(id) {
+  window.deletePrayer = async function(id) {
     if (!confirm('¿Estás seguro de eliminar esta petición de oración?')) return;
     window.CMSData = window.CMSData || {};
     window.CMSData.prayers = (window.CMSData.prayers || []).filter(pr => pr.id !== id);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     renderInboxTables();
-    showToast('Petición eliminada.');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('Petición eliminada permanentemente del servidor.', 'success');
+    } else {
+      showToast('Petición eliminada en caché local.', 'warning');
+    }
   };
 
-  window.deleteContribution = function(id) {
+  window.deleteContribution = async function(id) {
     if (!confirm('¿Estás seguro de eliminar este registro de diezmo/ofrenda?')) return;
     window.CMSData = window.CMSData || {};
     window.CMSData.contributions = (window.CMSData.contributions || []).filter(ct => ct.id !== id);
-    window.saveCMSData(window.CMSData);
+    const syncResult = await window.saveCMSData(window.CMSData);
     renderInboxTables();
-    showToast('Registro de diezmo eliminado.');
+    if (syncResult && syncResult.serverSynced) {
+      showToast('Registro de diezmo eliminado permanentemente del servidor.', 'success');
+    } else {
+      showToast('Registro de diezmo eliminado en caché local.', 'warning');
+    }
   };
 
   // --- SECURITY CHANGE PASS ---
@@ -940,20 +1203,34 @@
   };
 
   // --- TOAST ALERTS ---
-  function showToast(msg) {
+  function showToast(msg, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
     const toast = document.createElement('div');
     toast.className = 'toast-msg';
-    toast.innerHTML = `<i class="fas fa-check-circle" style="color: var(--color-accent);"></i> ${msg}`;
+
+    let icon = '<i class="fas fa-check-circle" style="color: #27c93f;"></i>';
+    if (type === 'warning') {
+      toast.style.borderColor = 'rgba(255, 189, 46, 0.7)';
+      toast.style.background = 'rgba(7, 42, 66, 0.95)';
+      icon = '<i class="fas fa-exclamation-triangle" style="color: #ffbd2e;"></i>';
+    } else if (type === 'error') {
+      toast.style.borderColor = 'rgba(255, 95, 86, 0.7)';
+      toast.style.background = 'rgba(7, 42, 66, 0.95)';
+      icon = '<i class="fas fa-times-circle" style="color: #ff5f56;"></i>';
+    } else {
+      toast.style.borderColor = 'rgba(39, 201, 63, 0.6)';
+    }
+
+    toast.innerHTML = `${icon} <span>${msg}</span>`;
     container.appendChild(toast);
 
     setTimeout(() => {
       toast.style.opacity = '0';
       toast.style.transition = 'opacity 0.3s ease';
       setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 4000);
   }
 
   // --- DATA EXPORT / IMPORT (cms-data.json) ---
@@ -974,10 +1251,10 @@
       navigator.clipboard.writeText(jsonStr).then(() => {
         showToast('¡JSON copiado al portapapeles!');
       }).catch(() => {
-        showToast('Error al copiar al portapapeles.');
+        showToast('Error al copiar al portapapeles.', 'error');
       });
     } else {
-      showToast('Portapapeles no soportado en este navegador.');
+      showToast('Portapapeles no soportado en este navegador.', 'warning');
     }
   };
 
@@ -985,13 +1262,17 @@
     const file = event.target.files && event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
       try {
         const parsed = JSON.parse(e.target.result);
         window.CMSData = parsed;
-        window.saveCMSData(parsed);
+        const syncResult = await window.saveCMSData(parsed);
         initDashboard();
-        showToast('¡Datos del CMS importados y sincronizados con éxito!');
+        if (syncResult && syncResult.serverSynced) {
+          showToast('¡Datos del CMS importados y guardados en disco exitosamente!', 'success');
+        } else {
+          showToast('Datos del CMS importados en caché local.', 'warning');
+        }
       } catch (err) {
         alert('Error al leer el archivo JSON: formato inválido.');
       }

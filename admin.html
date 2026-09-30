@@ -830,6 +830,9 @@
                     <p style="margin: 5px 0 0; color: var(--text-muted); font-size: 0.9rem;">Gestiona y actualiza el contenido de El Faro en tiempo real.</p>
                 </div>
                 <div class="user-badge" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div id="serverStatusBadge" style="background: rgba(39, 201, 63, 0.15); border: 1px solid rgba(39, 201, 63, 0.4); color: #27c93f; font-weight: 700; padding: 7px 14px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem;" title="Estado de la conexión con el servidor Node.js">
+                        <i class="fas fa-server"></i> <span id="serverStatusText">Verificando Servidor...</span>
+                    </div>
                     <button type="button" onclick="exportCMSData()" class="action-btn" style="background: rgba(39, 201, 63, 0.15); border-color: rgba(39, 201, 63, 0.45); color: #27c93f; font-weight: 700; padding: 7px 14px; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;" title="Descargar archivo cms-data.json con todos los cambios">
                         <i class="fas fa-file-download"></i> <span>Descargar JSON</span>
                     </button>
@@ -1592,15 +1595,27 @@
                     </div>
                 </div>
 
+                <!-- Opción A: Subir Foto desde Celular / Computadora -->
+                <div class="input-group" style="margin-bottom: 18px;">
+                    <label style="display: block; color: var(--color-accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-upload"></i> 1. Subir Foto desde tu Equipo (Recomendado)</label>
+                    <input type="file" id="newImgFile" accept="image/*" class="login-input-field" style="padding: 10px; cursor: pointer; background: rgba(7,42,66,0.6);" onchange="handleImageFileSelect(event)">
+                </div>
+
+                <!-- Vista Previa de la Imagen Seleccionada -->
+                <div id="newImgPreviewBox" style="display: none; margin-bottom: 18px; text-align: center; background: rgba(2,12,21,0.5); padding: 12px; border-radius: 14px; border: 1px dashed rgba(255,220,51,0.3);">
+                    <img id="newImgPreviewImg" src="" alt="Vista previa" style="max-height: 160px; max-width: 100%; border-radius: 10px; object-fit: cover;">
+                </div>
+
+                <!-- Opción B: Enlace o Ruta Existente -->
                 <div class="input-group" style="margin-bottom: 28px;">
-                    <label style="display: block; color: var(--color-accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-image"></i> Ruta o URL de la Imagen</label>
+                    <label style="display: block; color: var(--color-accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-link"></i> 2. O ingresa Ruta / URL de la Imagen</label>
                     <div class="login-input-wrapper" style="margin-bottom: 0;">
                         <i class="fas fa-link input-icon"></i>
-                        <input type="text" id="newImgUrl" class="login-input-field" placeholder="Ej. assets/img/adoracion_nueva.jpg o https://..." required>
+                        <input type="text" id="newImgUrl" class="login-input-field" placeholder="Ej. assets/img/adoracion_nueva.jpg o https://..." oninput="handleImageUrlInput(this.value)">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-solid-primary full-width" style="padding: 16px; cursor: pointer;">
+                <button type="submit" id="btnPublishImage" class="btn-solid-primary full-width" style="padding: 16px; cursor: pointer;">
                     <i class="fas fa-cloud-upload-alt"></i> PUBLICAR FOTO EN GALERÍA
                 </button>
             </form>

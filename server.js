@@ -1,7 +1,7 @@
 /**
  * Backend Node.js Server & Hardened CMS Engine — El Faro CVC
  * Provides secure REST API endpoints, separated public inboxes, token authentication,
- * atomic write queues, and sensitive file isolation.
+ * image uploading, atomic write queues, and sensitive file isolation.
  */
 
 const express = require('express');
@@ -13,17 +13,55 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'cms-data.json');
 const TMP_FILE = path.join(__dirname, 'cms-data.json.tmp');
+const UPLOADS_DIR = path.join(__dirname, 'assets', 'img');
 
 // Admin credentials (configurable via environment variable)
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@elfarocvc.com').toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ElFaro2026!';
+const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days session
 
-// In-memory active session tokens: Map<token, { createdAt: number, expiresAt: number }>
-const activeSessions = new Map();
-const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+// Persistent server secret for HMAC token signing
+const SECRET_FILE = path.join(__dirname, '.server_secret');
+let SERVER_SECRET;
+try {
+  if (fs.existsSync(SECRET_FILE)) {
+    SERVER_SECRET = fs.readFileSync(SECRET_FILE, 'utf8').trim();
+  } else {
+    SERVER_SECRET = crypto.randomBytes(32).toString('hex');
+    fs.writeFileSync(SECRET_FILE, SERVER_SECRET, 'utf8');
+  }
+} catch (_) {
+  SERVER_SECRET = 'elfaro_cvc_secret_key_2026';
+}
 
-// Middleware: JSON parser with payload limits
-app.use(express.json({ limit: '5mb' }));
+function createToken(email) {
+  const expiresAt = Date.now() + SESSION_DURATION_MS;
+  const payload = `${email}:${expiresAt}`;
+  const sig = crypto.createHmac('sha256', SERVER_SECRET).update(payload).digest('hex');
+  return Buffer.from(`${payload}:${sig}`).toString('base64url');
+}
+
+function verifyToken(token) {
+  try {
+    if (!token) return null;
+    const raw = Buffer.from(token, 'base64url').toString('utf8');
+    const parts = raw.split(':');
+    if (parts.length !== 3) return null;
+    const [email, expiresAtStr, sig] = parts;
+    const expiresAt = parseInt(expiresAtStr, 10);
+    if (isNaN(expiresAt) || Date.now() > expiresAt) return null;
+    const expectedSig = crypto.createHmac('sha256', SERVER_SECRET).update(`${email}:${expiresAt}`).digest('hex');
+    if (crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+      return { email, expiresAt };
+    }
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+// Middleware: JSON parser with 25MB limit to allow image uploads
+app.use(express.json({ limit: '25mb' }));
 
 // Middleware: Basic Security Headers
 app.use((req, res, next) => {
@@ -40,7 +78,8 @@ const RESTRICTED_FILES = [
   'package-lock.json',
   '.htaccess',
   '.env',
-  '.gitignore'
+  '.gitignore',
+  '.server_secret'
 ];
 
 app.use((req, res, next) => {
@@ -114,24 +153,30 @@ function sanitizeText(str, maxLength = 2000) {
 function requireAdminAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized: Missing or invalid token.' });
+    return res.status(401).json({ error: 'Unauthorized: Falta token de autorización.' });
   }
 
   const token = authHeader.split(' ')[1];
-  const session = activeSessions.get(token);
+  const session = verifyToken(token);
 
   if (!session) {
-    return res.status(401).json({ error: 'Unauthorized: Session expired or invalid.' });
-  }
-
-  if (Date.now() > session.expiresAt) {
-    activeSessions.delete(token);
-    return res.status(401).json({ error: 'Unauthorized: Session token expired.' });
+    return res.status(401).json({ error: 'Unauthorized: Sesión inválida o expirada.' });
   }
 
   req.adminSession = session;
   next();
 }
+
+// ==========================================
+// 0. HEALTH / STATUS API
+// ==========================================
+app.get('/api/server-status', (req, res) => {
+  res.json({
+    status: 'online',
+    timestamp: Date.now(),
+    message: 'Servidor El Faro CMS activo y en línea.'
+  });
+});
 
 // ==========================================
 // 1. PUBLIC INBOX API (Restricted & Sanitized)
@@ -236,14 +281,8 @@ app.post('/api/admin/login', (req, res) => {
   const cleanPass = (password || '').trim();
 
   if (cleanEmail === ADMIN_EMAIL && cleanPass === ADMIN_PASSWORD) {
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = createToken(cleanEmail);
     const expiresAt = Date.now() + SESSION_DURATION_MS;
-
-    activeSessions.set(token, {
-      email: cleanEmail,
-      createdAt: Date.now(),
-      expiresAt
-    });
 
     return res.json({
       status: 'success',
@@ -262,7 +301,47 @@ app.get('/api/admin/verify-token', requireAdminAuth, (req, res) => {
 });
 
 // ==========================================
-// 3. CMS CONTENT API
+// 3. FILE UPLOAD API (Images to assets/img/)
+// ==========================================
+app.post('/api/upload', requireAdminAuth, async (req, res) => {
+  const { fileName, fileData } = req.body || {};
+  if (!fileData) {
+    return res.status(400).json({ error: 'No se recibieron datos de archivo.' });
+  }
+
+  try {
+    // Extract base64 payload
+    const matches = fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const base64Content = matches ? matches[2] : fileData;
+    const buffer = Buffer.from(base64Content, 'base64');
+
+    // Limit image size to 15MB
+    if (buffer.length > 15 * 1024 * 1024) {
+      return res.status(400).json({ error: 'El archivo excede el tamaño máximo permitido (15MB).' });
+    }
+
+    const ext = (path.extname(fileName || '') || '.jpg').toLowerCase();
+    const safeExt = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif'].includes(ext) ? ext : '.jpg';
+    const cleanBase = path.basename(fileName || 'foto', ext).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 30);
+    const safeName = `${cleanBase}_${Date.now()}${safeExt}`;
+    const targetPath = path.join(UPLOADS_DIR, safeName);
+
+    await fs.promises.writeFile(targetPath, buffer);
+    console.log(`[Upload] Imagen guardada en disco: ${safeName} (${buffer.length} bytes)`);
+
+    res.json({
+      status: 'success',
+      url: `assets/img/${safeName}`,
+      message: 'Foto subida y almacenada en disco exitosamente.'
+    });
+  } catch (err) {
+    console.error('Error al subir imagen:', err);
+    res.status(500).json({ error: 'Error al procesar la imagen en el servidor.' });
+  }
+});
+
+// ==========================================
+// 4. CMS CONTENT API
 // ==========================================
 
 // GET /api/cms-data (Public Read)
@@ -283,8 +362,7 @@ app.post('/api/cms-data', requireAdminAuth, async (req, res) => {
   }
 
   try {
-    await mutateCmsData(currentData => {
-      // Preserve critical arrays if not explicitly provided
+    const updated = await mutateCmsData(currentData => {
       return {
         ...currentData,
         ...newData,
@@ -295,8 +373,10 @@ app.post('/api/cms-data', requireAdminAuth, async (req, res) => {
       };
     });
 
-    res.json({ status: 'success', message: 'Datos del CMS actualizados y sincronizados con éxito.' });
+    console.log('[CMS Sync] Datos del CMS actualizados en disco (cms-data.json).');
+    res.json({ status: 'success', message: 'Datos del CMS guardados en disco exitosamente.' });
   } catch (err) {
+    console.error('Error saving CMS data:', err);
     res.status(500).json({ error: 'Error interno al escribir datos del CMS.' });
   }
 });

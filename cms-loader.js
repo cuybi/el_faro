@@ -138,32 +138,49 @@
     }
   }
 
-  function saveCMSToLocal(data) {
+  async function saveCMSToLocal(data) {
     if (data) {
       data._lastSavedLocal = Date.now();
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // Authorized API sync only if admin session token exists
-    const token = sessionStorage.getItem('elfaro_admin_token');
+
+    // Retrieve admin token from either sessionStorage or localStorage
+    const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
     if (token) {
       try {
-        fetch(API_ENDPOINT, {
+        const resp = await fetch(API_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
           },
           body: JSON.stringify(data)
-        }).catch(() => {});
-      } catch (e) {}
+        });
+
+        if (resp.ok) {
+          const resJson = await resp.json();
+          console.log('[CMS Sync] Sincronizado en servidor exitosamente:', resJson);
+          return { success: true, serverSynced: true, message: resJson.message };
+        } else {
+          const errJson = await resp.json().catch(() => ({}));
+          console.warn('[CMS Sync] Servidor rechazó guardado:', resp.status, errJson);
+          return { success: false, serverSynced: false, status: resp.status, error: errJson.error || 'Acceso no autorizado o sesión expirada' };
+        }
+      } catch (e) {
+        console.warn('[CMS Sync] Servidor no accesible:', e.message);
+        return { success: true, serverSynced: false, offline: true, error: 'Servidor no disponible, guardado únicamente en caché local.' };
+      }
     }
+
+    return { success: true, serverSynced: false, noToken: true, message: 'Guardado localmente. Inicia sesión en el panel para sincronizar con el servidor.' };
   }
 
-  window.saveCMSData = function(newData) {
+  window.saveCMSData = async function(newData) {
     window.CMSData = newData;
-    saveCMSToLocal(newData);
+    const result = await saveCMSToLocal(newData);
     applyDynamicContent();
     document.dispatchEvent(new CustomEvent('cmsDataReady', { detail: newData }));
+    return result;
   };
 
   // Apply Content Overrides across public pages
