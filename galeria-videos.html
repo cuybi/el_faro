@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Videos | El Faro</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style-inicio.css">
+</head>
+<body>
+    
+    <!-- Navigation Header -->
+    <header id="header" class="luxury-header scrolled">
+        <div class="header-container">
+            <a href="inicio.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo El Faro">
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Ministerios <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                            <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                            <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                            <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                            <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                            <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                            <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                            <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                            <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                            <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Prédicas <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="galeria-videos.html" style="color: var(--color-accent);">Videos</a></li>
+                            <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                    <li class="nav-btn-container"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold">Diezmos y Ofrendas</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <i class="fas fa-times close-menu" id="closeMenu"></i>
+        <ul>
+            <li><a href="inicio.html">Inicio</a></li>
+            <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+            <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+            <li><a href="inicio.html#eventos">Eventos</a></li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Ministerios <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                    <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                    <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                    <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                    <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                    <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                    <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                    <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                    <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                    <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                </ul>
+            </li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Prédicas <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="galeria-videos.html">Videos</a></li>
+                    <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                </ul>
+            </li>
+            <li><a href="inicio.html#contacto">Contacto</a></li>
+            <li style="margin-top: 15px;"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="display: inline-block; text-align: center; width: 100%;">Diezmos y Ofrendas</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px;">
+        <section class="luxury-section darkest-bg" style="min-height: calc(100vh - 200px);">
+            <div class="section-container">
+                <div class="section-header text-center" style="margin-bottom: 30px;">
+                    <span class="subtitle-gold">Prédicas, Mensajes & Eventos</span>
+                    <h1 class="elegant-heading text-light" style="font-size: 3rem; margin-bottom: 10px;">Galería de Videos</h1>
+                    <div class="divider-gold"></div>
+                    <p class="section-text text-light" style="max-width: 650px; margin: 0 auto 35px auto;">Revive nuestros momentos más inspiradores, sermones dominicales y celebraciones a través de nuestra colección de videos.</p>
+                </div>
+
+                <!-- CATEGORY FILTER PILLS -->
+                <div class="category-filter-bar">
+                    <button class="filter-pill active" onclick="filterVideos('todos', this)"><i class="fas fa-play-circle"></i> Todos los Videos</button>
+                    <button class="filter-pill" onclick="filterVideos('predicas', this)"><i class="fas fa-bible"></i> Prédicas</button>
+                    <button class="filter-pill" onclick="filterVideos('adoracion', this)"><i class="fas fa-music"></i> Adoración</button>
+                    <button class="filter-pill" onclick="filterVideos('eventos', this)"><i class="fas fa-calendar-star"></i> Eventos Especiales</button>
+                </div>
+
+                <!-- LUXURY VIDEO GALLERY GRID -->
+                <div class="luxury-gallery-grid" id="cms-video-grid">
+                    
+                    <div class="luxury-gallery-card" data-category="predicas">
+                        <div class="gallery-card-thumb" style="height: 240px;">
+                            <span class="gallery-card-badge"><i class="fas fa-bible"></i> Prédica Shorts</span>
+                            <iframe src="https://www.youtube.com/embed/ygfoYSzTPU4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width: 100%; height: 100%; border: none;"></iframe>
+                        </div>
+                        <div class="gallery-card-body">
+                            <div>
+                                <h4 style="font-size: 1.05rem;">Prédica: Fe & Esperanza</h4>
+                                <span style="font-size: 0.78rem; color: var(--text-muted);">Pastor Robert Mercado</span>
+                            </div>
+                            <span class="badge-mini-gold" style="padding: 4px 10px; background: rgba(255,220,51,0.12); border: 1px solid var(--color-accent); border-radius: 12px; font-size: 0.75rem; color: var(--color-accent);"><i class="fab fa-youtube"></i> HD</span>
+                        </div>
+                    </div>
+
+                    <div class="luxury-gallery-card" data-category="adoracion">
+                        <div class="gallery-card-thumb" style="height: 240px; background: url('assets/img/worship.jpg') center/cover;">
+                            <span class="gallery-card-badge"><i class="fas fa-music"></i> Noche de Adoración</span>
+                            <div class="gallery-card-hover-overlay" style="opacity: 1; background: rgba(4,28,44,0.45);">
+                                <div class="hover-icon-circle" style="background: rgba(255,220,51,0.9); color: #041C2C;"><i class="fas fa-play"></i></div>
+                            </div>
+                        </div>
+                        <div class="gallery-card-body">
+                            <div>
+                                <h4 style="font-size: 1.05rem;">Noche Especial de Alabanza</h4>
+                                <span style="font-size: 0.78rem; color: var(--text-muted);">Ministerio de Adoración</span>
+                            </div>
+                            <span class="badge-mini-gold" style="padding: 4px 10px; background: rgba(255,220,51,0.12); border: 1px solid var(--color-accent); border-radius: 12px; font-size: 0.75rem; color: var(--color-accent);"><i class="fas fa-heart"></i> En Vivo</span>
+                        </div>
+                    </div>
+
+                    <div class="luxury-gallery-card" data-category="eventos">
+                        <div class="gallery-card-thumb" style="height: 240px; background: url('assets/img/peniel-bg.jpg') center/cover;">
+                            <span class="gallery-card-badge"><i class="fas fa-star"></i> Evento Peniel</span>
+                            <div class="gallery-card-hover-overlay" style="opacity: 1; background: rgba(4,28,44,0.45);">
+                                <div class="hover-icon-circle" style="background: rgba(255,220,51,0.9); color: #041C2C;"><i class="fas fa-play"></i></div>
+                            </div>
+                        </div>
+                        <div class="gallery-card-body">
+                            <div>
+                                <h4 style="font-size: 1.05rem;">Resumen Encuentro Peniel</h4>
+                                <span style="font-size: 0.78rem; color: var(--text-muted);">Comunidad El Faro</span>
+                            </div>
+                            <span class="badge-mini-gold" style="padding: 4px 10px; background: rgba(255,220,51,0.12); border: 1px solid var(--color-accent); border-radius: 12px; font-size: 0.75rem; color: var(--color-accent);"><i class="fas fa-fire"></i> Resumen</span>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="text-center" style="margin-top: 50px;">
+                    <a href="galeria-imagenes.html" class="btn-solid-primary" style="padding: 16px 36px; border-radius: 30px; font-weight: 700;">Ver Galería de Fotografías <i class="fas fa-images" style="margin-left: 10px;"></i></a>
+                </div>
+            </div>
+
+            <script>
+                function filterVideos(category, btn) {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+
+                    const cards = document.querySelectorAll('#cms-video-grid .luxury-gallery-card');
+                    cards.forEach(card => {
+                        if (category === 'todos' || card.dataset.category === category) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-container">
+            <div class="footer-col brand-col">
+                <img src="assets/img/logo.png" alt="Logo El Faro" class="footer-logo">
+                <p class="footer-desc">Centro de Vida Cristiana.<br>Un lugar de fe, esperanza y amor.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/elfarocvc" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/elfarocvc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@elfarocvc" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces Rapidos</h4>
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-map-marker-alt"></i> Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia</p>
+                <p><i class="fas fa-phone"></i> +591 3 345 6789</p>
+                <p><i class="fas fa-envelope"></i> info@elfarocvc.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 El Faro Centro de Vida Cristiana. Todos los derechos reservados. <a href="admin.html" style="color: rgba(255,255,255,0.15); text-decoration: none; margin-left: 10px; font-size: 0.75rem;" title="Acceso Administrativo" aria-label="Acceso Admin"><i class="fas fa-lock"></i> Admin</a></p>
+        </div>
+    </footer>
+
+
+
+    <script src="app.js"></script>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="https://wa.me/59179878844" target="_blank" class="fab-btn fab-whatsapp" data-tooltip="Escríbenos por WhatsApp" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <button class="fab-btn fab-scroll-top" id="scrollTopBtn" data-tooltip="Volver arriba" aria-label="Subir" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+    <script>
+        (function() {
+            var btn = document.getElementById('scrollTopBtn');
+            if (btn) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 300) {
+                        btn.classList.add('visible');
+                    } else {
+                        btn.classList.remove('visible');
+                    }
+                });
+            }
+        })();
+    </script>
+    <script src="cms-loader.js"></script>
+    <script src="cms-visual-editor.js"></script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Primera Vez | El Faro Centro de Vida Cristiana</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style-inicio.css">
+    <style>
+        .primera-vez-hero {
+            background-image: linear-gradient(180deg, rgba(4, 28, 44, 0.75) 0%, rgba(2, 12, 21, 0.95) 100%), url('assets/img/primera-vez.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 180px 20px 90px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pv-card-luxury {
+            background: rgba(7, 42, 66, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 220, 51, 0.25);
+            border-radius: 28px;
+            padding: 40px 30px;
+            text-align: left;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pv-card-luxury:hover {
+            transform: translateY(-8px);
+            border-color: #FFD200;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 210, 0, 0.2);
+        }
+
+        .pv-icon-box {
+            width: 65px;
+            height: 65px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255, 210, 0, 0.25) 0%, rgba(255, 210, 0, 0.08) 100%);
+            border: 1px solid rgba(255, 210, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD200;
+            font-size: 1.6rem;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 20px rgba(255, 210, 0, 0.15);
+            transition: transform 0.4s ease;
+        }
+
+        .pv-card-luxury:hover .pv-icon-box {
+            transform: scale(1.1) rotate(5deg);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navigation Header -->
+    <header id="header" class="luxury-header scrolled">
+        <div class="header-container">
+            <a href="inicio.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo El Faro">
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Ministerios <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                            <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                            <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                            <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                            <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                            <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                            <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                            <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                            <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                            <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Prédicas <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="galeria-videos.html">Videos</a></li>
+                            <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                    <li class="nav-btn-container"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold">Diezmos y Ofrendas</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <i class="fas fa-times close-menu" id="closeMenu"></i>
+        <ul>
+            <li><a href="inicio.html">Inicio</a></li>
+            <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+            <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+            <li><a href="inicio.html#eventos">Eventos</a></li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Ministerios <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                    <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                    <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                    <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                    <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                    <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                    <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                    <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                    <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                    <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                </ul>
+            </li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Prédicas <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="galeria-videos.html">Videos</a></li>
+                    <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                </ul>
+            </li>
+            <li><a href="inicio.html#contacto">Contacto</a></li>
+            <li style="margin-top: 15px;"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="display: inline-block; text-align: center; width: 100%;">Diezmos y Ofrendas</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="primera-vez-hero">
+        <div class="eyebrow-badge">
+            <i class="fas fa-heart"></i> Tu Primera Visita
+        </div>
+        <h1 class="elegant-heading uppercase-heading text-light" style="font-size: 3.5rem; margin-bottom: 15px;">
+            BIENVENIDO A CASA
+        </h1>
+        <p class="section-text text-light" style="max-width: 800px; margin: 0 auto 30px; font-size: 1.15rem; line-height: 1.8;">
+            Queremos conocerte y acompañarte en tus primeros pasos. En El Faro no solo encontrarás una iglesia, sino una familia cálida. Hemos preparado todo con amor para que tu primera visita sea memorable y de gran bendición.
+        </p>
+
+        <!-- Featured Bible Verse -->
+        <div class="bible-verse-hero-card">
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p class="verse-text">
+                "Así que ya no sois extranjeros ni advenedizos, sino conciudadanos de los santos, y miembros de la familia de Dios."
+            </p>
+            <span class="verse-ref"><i class="fas fa-book-bible" style="margin-right: 6px;"></i> Efesios 2:19</span>
+        </div>
+    </section>
+
+    <!-- 3 Pillars Grid -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #020c15 0%, #041C2C 100%); padding: 80px 0;">
+        <div class="section-container">
+            <div class="text-center">
+                <span class="eyebrow-badge"><i class="fas fa-star"></i> Tu Experiencia en El Faro</span>
+                <h2 class="elegant-heading" style="margin-bottom: 10px;">¿Qué puedes esperar en tu primera visita?</h2>
+                <div class="divider-gold center"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px;">
+                <div class="pv-card-luxury">
+                    <div class="pv-icon-box">
+                        <i class="fas fa-map-location-dot"></i>
+                    </div>
+                    <h3 class="text-light" style="font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 12px;">¿Dónde estamos?</h3>
+                    <p class="text-muted" style="font-size: 0.98rem; line-height: 1.7;">
+                        Nos ubicamos en el Cuarto Anillo Radial 27 (Av. Nueva Jerusalén). Contamos con parqueo privado vigilado y un equipo de bienvenida esperándote en la puerta.
+                    </p>
+                </div>
+
+                <div class="pv-card-luxury">
+                    <div class="pv-icon-box">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="text-light" style="font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 12px;">Horarios de Culto</h3>
+                    <p class="text-muted" style="font-size: 0.98rem; line-height: 1.7;">
+                        Acompáñanos todos los domingos. Contamos con una reunión vibrante para adultos y un programa infantil seguro, pedagógico y divertido para niños.
+                    </p>
+                </div>
+
+                <div class="pv-card-luxury">
+                    <div class="pv-icon-box">
+                        <i class="fas fa-mug-hot"></i>
+                    </div>
+                    <h3 class="text-light" style="font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 12px;">Lounge Café de Bienvenida</h3>
+                    <p class="text-muted" style="font-size: 0.98rem; line-height: 1.7;">
+                        Al finalizar la reunión, te invitamos a nuestro Café VIP de invitados para compartir un refrigerio, conocer a los pastores y resolver cualquier inquietud.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Glassmorphic CTA Card -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #041C2C 0%, #020c15 100%); padding: 90px 0;">
+        <div class="section-container text-center">
+            <div style="background: linear-gradient(145deg, rgba(7, 42, 66, 0.7) 0%, rgba(4, 28, 44, 0.9) 100%); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 220, 51, 0.35); border-radius: 32px; padding: 55px 40px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5); max-width: 850px; margin: 0 auto; position: relative; overflow: hidden;">
+                
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 210, 0, 0.15); border: 1px solid rgba(255, 210, 0, 0.4); display: flex; align-items: center; justify-content: center; color: #FFD200; font-size: 2.2rem; margin: 0 auto 25px; box-shadow: 0 0 30px rgba(255, 210, 0, 0.2);">
+                    <i class="fas fa-route"></i>
+                </div>
+
+                <h2 class="elegant-heading" style="font-size: 2.5rem; margin-bottom: 15px;">
+                    Solicita una Visita Guiada VIP
+                </h2>
+                <p class="text-muted" style="max-width: 650px; margin: 0 auto 35px; font-size: 1.08rem; line-height: 1.7;">
+                    Avísanos qué domingo vendrás y un anfitrión de nuestro equipo te recibirá en la entrada para acompañarte y reservar los mejores asientos para tu familia.
+                </p>
+
+                <button id="btn-agenda-modal" class="btn-solid-primary" style="cursor: pointer; font-family: inherit; font-size: 1.1rem; padding: 16px 45px; border-radius: 12px; font-weight: 700; box-shadow: 0 10px 25px rgba(255, 210, 0, 0.35); transition: all 0.3s ease;">
+                    Agendar una Visita Guiada <i class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agenda Modal -->
+    <div id="agenda-modal" class="agenda-modal-overlay">
+        <div class="agenda-modal-content">
+            <span class="close-modal-btn" id="close-agenda">&times;</span>
+            <div class="agenda-header">
+                <h2>Agenda tu Visita Guiada</h2>
+                <p>Selecciona la fecha de tu primera visita</p>
+            </div>
+            <div class="agenda-body">
+                <div class="agenda-calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month" type="button"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="current-month-year">Mes Año</h3>
+                        <button id="next-month" type="button"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                    </div>
+                    <div class="calendar-days" id="calendar-days">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+                <div class="agenda-details" id="agenda-details" style="display: none;">
+                    <h4>Horarios para el <span id="selected-date-text"></span></h4>
+                    <div class="time-slots" id="time-slots">
+                        <!-- Generado por JS -->
+                    </div>
+                    
+                    <form id="agenda-form" class="luxury-form" style="display: none; margin-top: 20px;">
+                        <h4 style="margin-bottom: 15px;">Tus Datos</h4>
+                        <div class="input-group">
+                            <input type="text" id="agenda-name" placeholder="Tu Nombre Completo" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="agenda-email" placeholder="Tu Correo Electrónico" required>
+                        </div>
+                        <button type="submit" class="btn-solid-primary full-width">Confirmar Mi Visita</button>
+                    </form>
+                </div>
+                <div id="agenda-success" class="agenda-success" style="display: none; text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 3.5rem; color: var(--color-accent); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 10px; color: var(--text-dark);">¡Te Esperamos con Alegría!</h3>
+                    <p style="color: var(--text-dark);">Hemos reservado tu recepción VIP. Te enviaremos las indicaciones por correo/WhatsApp.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-container">
+            <div class="footer-col brand-col">
+                <img src="assets/img/logo.png" alt="Logo El Faro" class="footer-logo">
+                <p class="footer-desc">Centro de Vida Cristiana.<br>Un lugar de fe, esperanza y amor.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/elfarocvc" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/elfarocvc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@elfarocvc" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-map-marker-alt"></i> Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia</p>
+                <p><i class="fas fa-phone"></i> +591 3 345 6789</p>
+                <p><i class="fas fa-envelope"></i> info@elfarocvc.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 El Faro Centro de Vida Cristiana. Todos los derechos reservados. <a href="admin.html" style="color: rgba(255,255,255,0.15); text-decoration: none; margin-left: 10px; font-size: 0.75rem;" title="Acceso Administrativo" aria-label="Acceso Admin"><i class="fas fa-lock"></i> Admin</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="https://wa.me/59179878844" target="_blank" class="fab-btn fab-whatsapp" data-tooltip="Escríbenos por WhatsApp" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <button class="fab-btn fab-scroll-top" id="scrollTopBtn" data-tooltip="Volver arriba" aria-label="Subir" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="agenda.js"></script>
+    <script src="app.js"></script>
+    <script src="cms-loader.js"></script>
+    <script src="cms-visual-editor.js"></script>
+</body>
+</html>

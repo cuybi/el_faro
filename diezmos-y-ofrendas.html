@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diezmos y Ofrendas | El Faro</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style-inicio.css">
+    <style>
+        .page-hero {
+            background-image: linear-gradient(180deg, rgba(4, 28, 44, 0.85) 0%, rgba(2, 12, 21, 0.95) 100%), url('assets/img/reunion-general.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 180px 20px 90px;
+            text-align: center;
+            position: relative;
+        }
+
+        .eyebrow-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(255, 220, 51, 0.12);
+            border: 1px solid rgba(255, 220, 51, 0.35);
+            border-radius: 50px;
+            color: var(--color-accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .bible-verse-hero-card {
+            max-width: 820px;
+            margin: 35px auto 0;
+            background: rgba(7, 42, 66, 0.55);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 220, 51, 0.25);
+            border-radius: 20px;
+            padding: 35px 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 220, 51, 0.08);
+            position: relative;
+        }
+
+        .bible-verse-hero-card i.quote-icon {
+            font-size: 2.2rem;
+            color: var(--color-accent);
+            opacity: 0.4;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .verse-text {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-style: italic;
+            color: #ffffff;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .verse-ref {
+            font-size: 0.95rem;
+            color: var(--color-accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* QR and Bank Section */
+        .giving-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: stretch;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 992px) {
+            .giving-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .qr-luxury-card {
+            background: linear-gradient(145deg, rgba(7, 42, 66, 0.65) 0%, rgba(4, 28, 44, 0.85) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            border-radius: 28px;
+            padding: 45px 35px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 220, 51, 0.1);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-luxury-card:hover {
+            transform: translateY(-8px);
+            border-color: #FFD200;
+            box-shadow: 0 30px 65px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 210, 0, 0.25);
+        }
+
+        /* Scanner Frame with Laser Sweep & Corner Brackets */
+        .qr-scan-container {
+            position: relative;
+            display: inline-block;
+            margin: 25px 0;
+            padding: 8px;
+        }
+
+        .qr-corner-bracket {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #FFD200;
+            border-style: solid;
+            pointer-events: none;
+            z-index: 3;
+            transition: all 0.3s ease;
+        }
+        .qr-corner-tl { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+        .qr-corner-tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+        .qr-corner-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+        .qr-corner-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+        .qr-luxury-card:hover .qr-corner-bracket {
+            width: 26px;
+            height: 26px;
+            filter: drop-shadow(0 0 8px #FFD200);
+        }
+
+        .qr-frame {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 220, 51, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 220, 51, 0.4);
+        }
+
+        .qr-frame img, .qr-frame svg {
+            width: 210px;
+            height: 210px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Laser Sweep Line Animation */
+        .qr-laser-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #FFD200 50%, transparent 100%);
+            box-shadow: 0 0 15px #FFD200, 0 0 25px #FFD200;
+            z-index: 2;
+            animation: laserScan 2.8s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes laserScan {
+            0% { top: 5%; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { top: 92%; opacity: 0; }
+        }
+
+        .bank-details-card {
+            background: linear-gradient(145deg, rgba(7, 42, 66, 0.65) 0%, rgba(4, 28, 44, 0.85) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            border-radius: 28px;
+            padding: 45px 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 220, 51, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .bank-details-card:hover {
+            transform: translateY(-8px);
+            border-color: #FFD200;
+            box-shadow: 0 30px 65px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 210, 0, 0.25);
+        }
+
+        .bank-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 14px;
+            border-radius: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s ease;
+        }
+
+        .bank-info-item:hover {
+            background: rgba(255, 220, 51, 0.06);
+            transform: translateX(4px);
+            border-bottom-color: rgba(255, 220, 51, 0.25);
+        }
+
+        .bank-info-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bank-info-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(255, 220, 51, 0.12);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD200;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .bank-label {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .bank-val {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.02rem;
+            text-align: right;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, rgba(255, 220, 51, 0.2) 0%, rgba(255, 220, 51, 0.1) 100%);
+            border: 1px solid rgba(255, 220, 51, 0.4);
+            color: var(--color-accent);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 12px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: var(--color-accent);
+            color: #041C2C;
+            box-shadow: 0 4px 15px rgba(255, 210, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Verses Section Grid */
+        .verses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .verse-card {
+            background: rgba(7, 42, 66, 0.35);
+            border: 1px solid rgba(255, 220, 51, 0.18);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .verse-card:hover {
+            border-color: rgba(255, 220, 51, 0.4);
+            transform: translateY(-4px);
+            background: rgba(7, 42, 66, 0.55);
+        }
+
+        .verse-card i {
+            color: var(--color-accent);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .verse-card p {
+            color: var(--text-light);
+            font-family: var(--font-heading);
+            font-style: italic;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .verse-card span {
+            color: var(--color-accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Luxury Select Input Custom Style */
+        .luxury-form select {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(4, 28, 44, 0.7);
+            border: 1px solid rgba(255, 220, 51, 0.25);
+            border-radius: 12px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .luxury-form select:focus {
+            border-color: var(--color-accent);
+        }
+        .luxury-form select option {
+            background: #041C2C;
+            color: #ffffff;
+        }
+
+        /* Dynamic Luxury Form Design System */
+        .luxury-form-card {
+            max-width: 720px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, rgba(7, 42, 66, 0.75) 0%, rgba(4, 28, 44, 0.9) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            border-radius: 28px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55), 0 0 35px rgba(255, 210, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+        }
+
+        .luxury-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, #FFD200 50%, transparent 100%);
+            animation: topGlowBar 4s infinite linear;
+        }
+
+        @keyframes topGlowBar {
+            0% { opacity: 0.3; transform: translateX(-100%); }
+            50% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0.3; transform: translateX(100%); }
+        }
+
+        .input-field-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .input-field-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #FFD200;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-icon-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-icon-box i.input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 210, 0, 0.7);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .input-icon-box textarea + i.input-icon,
+        .input-icon-box.textarea-box i.input-icon {
+            top: 20px;
+            transform: none;
+        }
+
+        .input-icon-box input,
+        .input-icon-box select,
+        .input-icon-box textarea {
+            width: 100%;
+            padding: 16px 20px 16px 50px !important;
+            background: rgba(4, 28, 44, 0.85) !important;
+            border: 1px solid rgba(255, 220, 51, 0.28) !important;
+            border-radius: 14px !important;
+            color: #ffffff !important;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-icon-box textarea {
+            padding-top: 16px !important;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .input-icon-box input::placeholder,
+        .input-icon-box textarea::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 300;
+        }
+
+        .input-icon-box input:focus,
+        .input-icon-box select:focus,
+        .input-icon-box textarea:focus {
+            border-color: #FFD200 !important;
+            background: rgba(4, 28, 44, 0.95) !important;
+            box-shadow: 0 0 22px rgba(255, 210, 0, 0.35), inset 0 0 10px rgba(255, 210, 0, 0.08) !important;
+            transform: translateY(-2px);
+        }
+
+        .input-icon-box:focus-within i.input-icon {
+            color: #FFD200 !important;
+            transform: translateY(-50%) scale(1.15);
+            text-shadow: 0 0 10px rgba(255, 210, 0, 0.5);
+        }
+
+        .input-icon-box.textarea-box:focus-within i.input-icon {
+            transform: scale(1.15) !important;
+        }
+
+        .btn-submit-giving {
+            width: 100%;
+            padding: 18px 30px;
+            background: linear-gradient(135deg, #FFD200 0%, #FFA800 100%);
+            border: none;
+            border-radius: 16px;
+            color: #041C2C;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 210, 0, 0.35);
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-submit-giving:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 18px 40px rgba(255, 210, 0, 0.5);
+            background: linear-gradient(135deg, #FFE047 0%, #FFB800 100%);
+        }
+
+        .btn-submit-giving:hover i {
+            transform: translateX(6px) rotate(-10deg);
+        }
+
+        .btn-submit-giving i {
+            transition: transform 0.3s ease;
+        }
+
+        .giving-success-card {
+            text-align: center;
+            padding: 30px 10px;
+            display: none;
+            animation: fadeInScale 0.5s ease forwards;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-icon-ring {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            background: rgba(255, 210, 0, 0.15);
+            border: 2px solid #FFD200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD200;
+            font-size: 2.6rem;
+            box-shadow: 0 0 30px rgba(255, 210, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navigation Header -->
+    <header id="header" class="luxury-header scrolled">
+        <div class="header-container">
+            <a href="inicio.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo El Faro">
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Ministerios <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                            <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                            <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                            <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                            <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                            <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                            <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                            <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                            <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                            <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Prédicas <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="galeria-videos.html">Videos</a></li>
+                            <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                    <li class="nav-btn-container"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="background: rgba(255, 220, 51, 0.15); border-color: var(--color-accent);">Diezmos y Ofrendas</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <i class="fas fa-times close-menu" id="closeMenu"></i>
+        <ul>
+            <li><a href="inicio.html">Inicio</a></li>
+            <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+            <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+            <li><a href="inicio.html#eventos">Eventos</a></li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Ministerios <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                    <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                    <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                    <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                    <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                    <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                    <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                    <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                    <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                    <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                </ul>
+            </li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Prédicas <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="galeria-videos.html">Videos</a></li>
+                    <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                </ul>
+            </li>
+            <li><a href="inicio.html#contacto">Contacto</a></li>
+            <li style="margin-top: 15px;"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="display: inline-block; text-align: center; width: 100%;">Diezmos y Ofrendas</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="eyebrow-badge">
+            <i class="fas fa-heart"></i> Gratitud y Generosidad
+        </div>
+        <h1 class="elegant-heading uppercase-heading text-light" style="font-size: 3.5rem; margin-bottom: 15px;">
+            DIEZMOS Y OFRENDAS
+        </h1>
+        <p class="section-text text-light" style="max-width: 750px; margin: 0 auto; font-size: 1.15rem; line-height: 1.8;">
+            Tu fidelidad y generosidad impulsan la obra del Reino de Dios, permitiendo llevar fe, esperanza y amor a nuestra ciudad y más allá.
+        </p>
+
+        <!-- Main Featured Bible Verse -->
+        <div class="bible-verse-hero-card">
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p class="verse-text cms-verse-text">
+                "Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre."
+            </p>
+            <span class="verse-ref cms-verse-ref"><i class="fas fa-book-bible" style="margin-right: 6px;"></i> 2 Corintios 9:7</span>
+        </div>
+    </section>
+
+    <!-- Verses & Principles Section -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #020c15 0%, #041C2C 100%);">
+        <div class="section-container">
+            <div class="text-center">
+                <span class="eyebrow-badge"><i class="fas fa-scroll"></i> Principios Bíblicos</span>
+                <h2 class="elegant-heading">Lo que la Biblia enseña sobre dar</h2>
+                <div class="divider-gold center"></div>
+            </div>
+
+            <div class="verses-grid">
+                <div class="verse-card">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <p>"Traed todos los diezmos al alfolí y haya alimento en mi casa; y probadme ahora en esto, dice Jehová de los ejércitos, si no os abriré las ventanas de los cielos..."</p>
+                    <span><i class="fas fa-bookmark" style="margin-right: 4px;"></i> Malaquías 3:10</span>
+                </div>
+                <div class="verse-card">
+                    <i class="fas fa-seedling"></i>
+                    <p>"Honra a Jehová con tus bienes, y con las primicias de todos tus frutos; y serán llenos tus graneros con abundancia, y tus lagares rebosarán de mosto."</p>
+                    <span><i class="fas fa-bookmark" style="margin-right: 4px;"></i> Proverbios 3:9-10</span>
+                </div>
+                <div class="verse-card">
+                    <i class="fas fa-hands-helping"></i>
+                    <p>"Dad, y se os dará; medida buena, apretada, remecida y rebosando darán en vuestro regazo; porque con la misma medida con que medís, os volverán a medir."</p>
+                    <span><i class="fas fa-bookmark" style="margin-right: 4px;"></i> Lucas 6:38</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QR & Bank Transfer Section -->
+    <section class="luxury-section" style="background: #041C2C; padding-top: 40px;">
+        <div class="section-container">
+            <div class="text-center">
+                <span class="eyebrow-badge"><i class="fas fa-qrcode"></i> Métodos de Aporte Digital</span>
+                <h2 class="elegant-heading">Realiza tu transferencia o escanea el QR</h2>
+                <p class="text-muted" style="max-width: 650px; margin: 10px auto 0;">
+                    Puedes diezmar u ofrendar de forma rápida y segura mediante código QR bancario o transferencia directa.
+                </p>
+                <div class="divider-gold center"></div>
+            </div>
+
+            <div class="giving-grid">
+                <!-- QR Code Display Card -->
+                <div class="qr-luxury-card">
+                    <div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--color-accent); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 8px;">
+                            <i class="fas fa-qrcode"></i> Escaneo Simple QR
+                        </div>
+                        <h3 class="text-light" style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 6px;">
+                            Código QR Bancario
+                        </h3>
+                        <p class="text-muted" style="font-size: 0.92rem; max-width: 320px; margin: 0 auto;">Válido desde cualquier aplicación móvil bancaria en Bolivia</p>
+                    </div>
+
+                    <!-- Scanner Box with Laser Sweep & Corner Brackets -->
+                    <div class="qr-scan-container">
+                        <div class="qr-corner-bracket qr-corner-tl"></div>
+                        <div class="qr-corner-bracket qr-corner-tr"></div>
+                        <div class="qr-corner-bracket qr-corner-bl"></div>
+                        <div class="qr-corner-bracket qr-corner-br"></div>
+                        
+                        <div class="qr-frame">
+                            <div class="qr-laser-line"></div>
+                            <img src="assets/img/qr-code.svg" alt="Código QR Diezmos y Ofrendas El Faro" class="cms-qr-img">
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 220, 51, 0.1); border: 1px solid rgba(255, 220, 51, 0.25); border-radius: 20px; padding: 10px 20px; display: inline-flex; align-items: center; gap: 8px; color: var(--color-accent); font-weight: 700; font-size: 0.9rem;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f; box-shadow: 0 0 10px #27c93f; display: inline-block;"></span>
+                        Centro de Vida Cristiana El Faro
+                    </div>
+                </div>
+
+                <!-- Bank Account Details Card -->
+                <div class="bank-details-card">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: var(--color-accent); font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 15px;">
+                            <i class="fas fa-university"></i> Transferencia Directa
+                        </div>
+                        <h3 class="text-light" style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 24px;">
+                            Datos Bancarios Oficiales
+                        </h3>
+
+                        <div class="bank-info-item">
+                            <div class="bank-info-left">
+                                <div class="bank-info-icon"><i class="fas fa-university"></i></div>
+                                <span class="bank-label">Banco:</span>
+                            </div>
+                            <span class="bank-val cms-bank-name">Banco Nacional de Bolivia (BNB)</span>
+                        </div>
+
+                        <div class="bank-info-item">
+                            <div class="bank-info-left">
+                                <div class="bank-info-icon"><i class="fas fa-user-shield"></i></div>
+                                <span class="bank-label">Titular de la cuenta:</span>
+                            </div>
+                            <span class="bank-val cms-acc-name">Centro de Vida Cristiana El Faro</span>
+                        </div>
+
+                        <div class="bank-info-item">
+                            <div class="bank-info-left">
+                                <div class="bank-info-icon"><i class="fas fa-credit-card"></i></div>
+                                <span class="bank-label">Número de Cuenta:</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span class="bank-val cms-acc-num" id="acc-number" style="font-family: monospace; font-size: 1.1rem; letter-spacing: 0.5px;">150-0123456-1</span>
+                                <button class="copy-btn" onclick="copyAccNumber()" id="copy-btn-el">
+                                    <i class="fas fa-copy"></i> Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bank-info-item">
+                            <div class="bank-info-left">
+                                <div class="bank-info-icon"><i class="fas fa-piggy-bank"></i></div>
+                                <span class="bank-label">Tipo de Cuenta:</span>
+                            </div>
+                            <span class="bank-val cms-acc-type">Cuenta de Ahorros (M/N)</span>
+                        </div>
+
+                        <div class="bank-info-item">
+                            <div class="bank-info-left">
+                                <div class="bank-info-icon"><i class="fas fa-id-card"></i></div>
+                                <span class="bank-label">NIT / CI:</span>
+                            </div>
+                            <span class="bank-val cms-bank-nit" style="font-family: monospace; font-size: 1.05rem;">1029384756</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 25px; padding: 16px 20px; background: rgba(255, 220, 51, 0.08); border: 1px dashed rgba(255, 220, 51, 0.35); border-radius: 16px; font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-lightbulb" style="color: #FFD200; font-size: 1.4rem; flex-shrink: 0;"></i>
+                        <div>
+                            Recuerda colocar en la glosa: <strong style="color: #ffffff;">Diezmo</strong> u <strong style="color: #ffffff;">Ofrenda</strong> seguido de tu nombre completo.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Confirmation / Contact Form Section -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #041C2C 0%, #020c15 100%); padding: 90px 0;">
+        <div class="section-container text-center">
+            <span class="eyebrow-badge"><i class="fas fa-file-invoice"></i> Registro de Aporte</span>
+            <h2 class="elegant-heading" style="font-size: 2.8rem; margin-bottom: 12px;">Formulario de Confirmación</h2>
+            <p class="text-muted" style="max-width: 650px; margin: 0 auto 45px; font-size: 1.05rem; line-height: 1.7;">
+                Si realizaste tu diezmo u ofrenda por transferencia o QR, puedes notificarnos aquí para validar tu aporte y enviarte tu comprobante digital.
+            </p>
+
+            <div class="luxury-form-card" id="givingCardContainer">
+                
+                <form id="givingForm" class="luxury-form" style="text-align: left;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-user"></i> Nombre Completo *</label>
+                            <div class="input-icon-box">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="giving-name" placeholder="Ej. Juan Pérez" required>
+                            </div>
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fab fa-whatsapp"></i> Teléfono / WhatsApp *</label>
+                            <div class="input-icon-box">
+                                <i class="fab fa-whatsapp input-icon"></i>
+                                <input type="tel" id="giving-phone" placeholder="+591 70000000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-field-group">
+                        <label><i class="fas fa-envelope"></i> Correo Electrónico *</label>
+                        <div class="input-icon-box">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="giving-email" placeholder="tu.correo@ejemplo.com" required>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-hand-holding-heart"></i> Tipo de Aporte *</label>
+                            <div class="input-icon-box">
+                                <i class="fas fa-hand-holding-usd input-icon"></i>
+                                <select id="giving-type" required>
+                                    <option value="" disabled selected>Selecciona una opción</option>
+                                    <option value="Diezmo">Diezmo</option>
+                                    <option value="Ofrenda General">Ofrenda General</option>
+                                    <option value="Primicias">Primicias</option>
+                                    <option value="Misiones">Misiones</option>
+                                    <option value="Pro-Templo">Proyecto Pro-Templo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-receipt"></i> N° de Comprobante / TRX</label>
+                            <div class="input-icon-box">
+                                <i class="fas fa-receipt input-icon"></i>
+                                <input type="text" id="giving-ref" placeholder="Ej. TRX-982341">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-field-group">
+                        <label><i class="fas fa-comment-alt"></i> Mensaje o Petición de Oración (Opcional)</label>
+                        <div class="input-icon-box textarea-box">
+                            <i class="fas fa-comment-alt input-icon"></i>
+                            <textarea id="giving-message" rows="3" placeholder="Escribe un mensaje o petición para nuestro equipo pastoral..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit-giving">
+                        Registrar Diezmo / Ofrenda <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+
+                <div id="givingSuccessCard" class="giving-success-card">
+                    <div class="success-icon-ring">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 style="color: #ffffff; font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 12px;">¡Registro Exitoso!</h3>
+                    <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto 20px auto; line-height: 1.7;">
+                        Hemos recibido tu notificación de aporte. Nuestro equipo de tesorería validará tu comprobante y te enviará la confirmación.
+                    </p>
+                    <div style="background: rgba(255, 220, 51, 0.1); border: 1px solid rgba(255, 220, 51, 0.3); border-radius: 14px; padding: 15px; display: inline-block; color: var(--color-accent); font-weight: 700; font-size: 0.95rem;">
+                        <i class="fas fa-ticket-alt" style="margin-right: 8px;"></i> Código de Referencia: <span id="givingRefTicket">FARO-84920</span>
+                    </div>
+                    <div style="margin-top: 30px;">
+                        <button onclick="resetGivingForm()" class="btn-outline-gold" style="padding: 12px 30px; border-radius: 25px; font-weight: 700; cursor: pointer;">
+                            <i class="fas fa-plus-circle"></i> Registrar Otro Aporte
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function copyAccNumber() {
+            const accNum = document.getElementById('acc-number').innerText;
+            navigator.clipboard.writeText(accNum).then(() => {
+                const btn = document.getElementById('copy-btn-el');
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+                btn.style.background = '#27c93f';
+                btn.style.color = '#ffffff';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+                    btn.style.background = 'rgba(255, 220, 51, 0.15)';
+                    btn.style.color = 'var(--color-accent)';
+                }, 2500);
+            });
+        }
+
+        document.getElementById('givingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('giving-name').value;
+            const phone = document.getElementById('giving-phone').value;
+            const email = document.getElementById('giving-email').value;
+            const type = document.getElementById('giving-type').value;
+            const ref = document.getElementById('giving-ref').value || 'Sin TRX';
+            const msg = document.getElementById('giving-message').value || '';
+
+            // Generate Ticket Reference
+            const ticket = 'FARO-' + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('givingRefTicket').innerText = ticket;
+
+            // Save to CMS & LocalStorage for Admin Inbox
+            const contributionData = {
+                id: 'ct-' + Date.now(),
+                name: name,
+                phone: phone,
+                email: email,
+                type: type,
+                ref: ref,
+                message: msg,
+                ticket: ticket,
+                date: new Date().toISOString()
+            };
+
+            if (window.CMSData) {
+                window.CMSData.contributions = window.CMSData.contributions || [];
+                window.CMSData.contributions.unshift(contributionData);
+                if (window.saveCMSData) {
+                    window.saveCMSData(window.CMSData);
+                }
+            } else {
+                try {
+                    let msgs = JSON.parse(localStorage.getItem('inboxMessages') || '[]');
+                    msgs.unshift(contributionData);
+                    localStorage.setItem('inboxMessages', JSON.stringify(msgs));
+                } catch(err) { console.log(err); }
+            }
+
+            this.style.display = 'none';
+            document.getElementById('givingSuccessCard').style.display = 'block';
+        });
+
+        function resetGivingForm() {
+            document.getElementById('givingForm').reset();
+            document.getElementById('givingForm').style.display = 'block';
+            document.getElementById('givingSuccessCard').style.display = 'none';
+        }
+    </script>
+    <script src="cms-loader.js"></script>
+    <script src="cms-visual-editor.js"></script>
+</body>
+</html>

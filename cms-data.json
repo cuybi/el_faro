@@ -1,0 +1,159 @@
+{
+  "siteTexts": {
+    "heroTitle": "CENTRO DE VIDA CRISTIANA EL FARO",
+    "heroSubtitle": "Un lugar donde la fe, la esperanza y el amor se encuentran para transformar vidas.",
+    "phone": "+591 79878844",
+    "whatsapp": "+591 79878844",
+    "email": "centrodevidacristianaelfaro@gmail.com",
+    "address": "Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia",
+    "sundaySchedule": "Domingos - 09:00 AM y 11:00 AM",
+    "youthSchedule": "Sábados - 06:30 PM",
+    "facebookUrl": "https://www.facebook.com/elfarocvc",
+    "instagramUrl": "https://www.instagram.com/elfarocvc",
+    "youtubeUrl": "https://www.youtube.com/@elfarocvc",
+    "tiktokUrl": "https://www.tiktok.com/@elfarocvc"
+  },
+  "bankInfo": {
+    "bankName": "Banco Nacional de Bolivia (BNB)",
+    "accountName": "Centro de Vida Cristiana El Faro",
+    "accountNumber": "150-0123456-1",
+    "accountType": "Cuenta de Ahorros (M/N)",
+    "nit": "1029384756",
+    "qrImage": "assets/img/qr-code.svg",
+    "featuredVerse": "Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre.",
+    "verseReference": "2 Corintios 9:7"
+  },
+  "galleryImages": [
+    {
+      "id": "img-1",
+      "title": "Noche de Adoración y Alabanza",
+      "category": "adoracion",
+      "imageUrl": "assets/img/adoracion_nueva.jpg",
+      "date": "2026-02-01"
+    },
+    {
+      "id": "img-2",
+      "title": "Reunión de Jóvenes Conectados",
+      "category": "jovenes",
+      "imageUrl": "assets/img/jovenes_galeria_nueva.jpg",
+      "date": "2026-02-05"
+    },
+    {
+      "id": "img-3",
+      "title": "Actividad del Ministerio de Niños",
+      "category": "ninos",
+      "imageUrl": "assets/img/ninos_nueva.jpg",
+      "date": "2026-02-08"
+    },
+    {
+      "id": "img-4",
+      "title": "Encuentro Familiar El Faro",
+      "category": "familias",
+      "imageUrl": "assets/img/familias_galeria_nueva.jpg",
+      "date": "2026-02-10"
+    },
+    {
+      "id": "img-5",
+      "title": "Servicio de Comunidad y Fraternidad",
+      "category": "comunidad",
+      "imageUrl": "assets/img/comunidad_nueva.jpg",
+      "date": "2026-02-12"
+    }
+  ],
+  "videos": [
+    {
+      "id": "vid-1",
+      "title": "Caminando en Fe y Esperanza",
+      "preacher": "Pastor Robert",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ygfoYSzTPU4",
+      "youtubeId": "ygfoYSzTPU4",
+      "thumbnail": "https://img.youtube.com/vi/ygfoYSzTPU4/hqdefault.jpg",
+      "date": "2026-02-08",
+      "featured": true
+    },
+    {
+      "id": "vid-2",
+      "title": "El Poder de la Oración en Familia",
+      "preacher": "Pastora Carla",
+      "youtubeUrl": "https://www.youtube.com/watch?v=5D3x5aH3E4k",
+      "youtubeId": "5D3x5aH3E4k",
+      "thumbnail": "https://img.youtube.com/vi/5D3x5aH3E4k/hqdefault.jpg",
+      "date": "2026-02-01",
+      "featured": false
+    }
+  ],
+  "prayers": [
+    {
+      "id": "pr-1790804690695",
+      "name": "Maria Sanchez",
+      "phone": "+591 71234567",
+      "email": "maria@test.com",
+      "request": "Oracion por mi familia",
+      "date": "2026-09-30T21:44:50.695Z",
+      "status": "Pendiente"
+    },
+    {
+      "id": "pr-1790803836233",
+      "name": "Juan Prueba",
+      "phone": "123456",
+      "email": "juan@test.com",
+      "request": "Peticion de prueba",
+      "date": "2026-09-30T21:30:36.233Z",
+      "status": "Pendiente"
+    },
+    {
+      "id": "pr-1",
+      "name": "María González",
+      "email": "maria@ejemplo.com",
+      "phone": "+591 71234567",
+      "request": "Pido oración por la salud y sanidad de mi familia.",
+      "date": "2026-02-12T14:30:00.000Z",
+      "status": "Pendiente"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "app-1790804690719",
+      "name": "Carlos Ruiz",
+      "email": "carlos@test.com",
+      "phone": "+591 79876543",
+      "date": "2026-10-15",
+      "time": "10:00 AM",
+      "status": "Pendiente"
+    },
+    {
+      "id": "app-1",
+      "name": "Carlos Mendoza",
+      "email": "carlos@ejemplo.com",
+      "phone": "+591 79876543",
+      "date": "2026-02-15",
+      "time": "10:00 AM",
+      "status": "Confirmada"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "ct-1790804690727",
+      "name": "Andrea Morales",
+      "phone": "+591 70011223",
+      "email": "andrea@test.com",
+      "type": "Diezmo",
+      "ref": "BNB-123456",
+      "message": "Dios les bendiga",
+      "date": "2026-09-30T21:44:50.727Z"
+    },
+    {
+      "id": "ct-1",
+      "name": "Juan Pérez",
+      "email": "juan.perez@ejemplo.com",
+      "phone": "+591 70011223",
+      "type": "Diezmo",
+      "ref": "TRX-884920",
+      "message": "Muchas bendiciones para toda la congregación.",
+      "date": "2026-02-13T08:15:00.000Z"
+    }
+  ],
+  "testKey": "val",
+  "_lastServerUpdate": "2026-09-30T21:44:50.773Z",
+  "auditTimestamp": 1790804690769
+}

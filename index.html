@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido | El Faro Centro de Vida Cristiana</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <meta name="description" content="Te damos la bienvenida a tu hogar, queremos darte una experiencia única y que sea de bendición para tu vida.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= LOADER (INTRO) ================= -->
+    <div id="intro-loader" class="intro-loader">
+        <!-- Icono del faro para la pantalla de carga -->
+        <img src="assets/img/favicon.png" alt="Cargando..." class="loader-gif">
+    </div>
+
+    <!-- ================= MAIN LAYOUT ================= -->
+    <main class="split-layout">
+        
+        <!-- PANEL IZQUIERDO (Contenido) -->
+        <section class="left-panel">
+            <div class="content-wrapper">
+                <h1 class="spaced-title">
+                    <span>E</span><span>R</span><span>E</span><span>S</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>E</span><span>S</span><span>P</span><span>E</span><span>C</span><span>I</span><span>A</span><span>L</span>
+                </h1>
+                
+                <div class="logo-container">
+                    <!-- Se asume que el logo de El Faro estará en esta ruta -->
+                    <img src="assets/img/logo.png" alt="El Faro Logo" class="main-logo" onerror="this.src='https://via.placeholder.com/400x150/000000/FFFFFF?text=EL+FARO'">
+                </div>
+                
+                <p class="welcome-text">
+                    Te damos la bienvenida a tu hogar, queremos darte una experiencia única y que sea de bendición para tu vida
+                </p>
+                
+                <div class="buttons-group">
+                    <a href="inicio.html" class="btn btn-solid">Bienvenidos</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL DERECHO (Carrusel) -->
+        <section class="right-panel">
+            <div class="welcome-carousel">
+                <img src="assets/img/worship.jpg" alt="Adoración" class="bg-image active">
+                <img src="assets/img/paloma.jpg" alt="Espíritu Santo" class="bg-image">
+                <img src="assets/img/primera-vez.jpg" alt="Comunidad" class="bg-image">
+                <div class="carousel-overlay"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        (function() {
+            var redirected = false;
+            function proceedToInicio() {
+                if (redirected) return;
+                redirected = true;
+                var loader = document.getElementById('intro-loader');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                        window.location.href = 'inicio.html';
+                    }, 300);
+                } else {
+                    window.location.href = 'inicio.html';
+                }
+            }
+
+            // Auto-redirect to inicio.html after 700ms
+            setTimeout(proceedToInicio, 700);
+
+            // Click anywhere to proceed instantly
+            document.addEventListener('click', proceedToInicio);
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+
+

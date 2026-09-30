@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestros Pastores y Liderazgo | El Faro</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style-inicio.css">
+    <style>
+        .pastores-hero {
+            background-image: linear-gradient(180deg, rgba(4, 28, 44, 0.75) 0%, rgba(2, 12, 21, 0.95) 100%), url('assets/img/reunion-general.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 180px 20px 90px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pastor-card-luxury {
+            background: linear-gradient(145deg, rgba(7, 42, 66, 0.65) 0%, rgba(4, 28, 44, 0.85) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .pastor-card-luxury:hover {
+            transform: translateY(-8px);
+            border-color: #FFD200;
+            box-shadow: 0 35px 75px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 210, 0, 0.2);
+        }
+
+        .pastor-img-container {
+            flex: 1;
+            min-width: 320px;
+            position: relative;
+            height: 100%;
+            min-height: 480px;
+            overflow: hidden;
+        }
+
+        .pastor-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .pastor-card-luxury:hover .pastor-img-container img {
+            transform: scale(1.04);
+        }
+
+        .pastor-info-content {
+            flex: 1.4;
+            min-width: 320px;
+            padding: 45px 45px 45px 0;
+        }
+
+        @media (max-width: 992px) {
+            .pastor-info-content {
+                padding: 30px 30px 45px 30px;
+            }
+        }
+
+        .social-pill-link {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255, 220, 51, 0.12);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            color: #FFD200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .social-pill-link:hover {
+            background: #FFD200;
+            color: #041C2C;
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 5px 15px rgba(255, 210, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navigation Header -->
+    <header id="header" class="luxury-header scrolled">
+        <div class="header-container">
+            <a href="inicio.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo El Faro">
+            </a>
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Ministerios <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                            <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                            <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                            <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                            <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                            <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                            <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                            <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                            <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                            <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Prédicas <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="galeria-videos.html">Videos</a></li>
+                            <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                    <li class="nav-btn-container"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold">Diezmos y Ofrendas</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <i class="fas fa-times close-menu" id="closeMenu"></i>
+        <ul>
+            <li><a href="inicio.html">Inicio</a></li>
+            <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+            <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+            <li><a href="inicio.html#eventos">Eventos</a></li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Ministerios <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                    <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                    <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                    <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                    <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                    <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                    <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                    <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                    <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                    <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                </ul>
+            </li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Prédicas <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="galeria-videos.html">Videos</a></li>
+                    <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                </ul>
+            </li>
+            <li><a href="inicio.html#contacto">Contacto</a></li>
+            <li style="margin-top: 15px;"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="display: inline-block; text-align: center; width: 100%;">Diezmos y Ofrendas</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pastores-hero">
+        <div class="eyebrow-badge">
+            <i class="fas fa-user-shield"></i> Liderazgo & Visión Pastoral
+        </div>
+        <h1 class="elegant-heading uppercase-heading text-light" style="font-size: 3.5rem; margin-bottom: 15px;">
+            NUESTROS PASTORES
+        </h1>
+        <p class="section-text text-light" style="max-width: 800px; margin: 0 auto 30px; font-size: 1.15rem; line-height: 1.8;">
+            Conoce a quienes guían a nuestra familia de fe con amor, vocación, pasión por la Palabra y un profundo deseo de ver el propósito de Dios cumplido en cada vida.
+        </p>
+
+        <!-- Featured Bible Verse -->
+        <div class="bible-verse-hero-card">
+            <i class="fas fa-quote-left quote-icon"></i>
+            <p class="verse-text">
+                "Y os daré pastores según mi corazón, que os apacienten con ciencia y con inteligencia."
+            </p>
+            <span class="verse-ref"><i class="fas fa-book-bible" style="margin-right: 6px;"></i> Jeremías 3:15</span>
+        </div>
+    </section>
+
+    <!-- Main Pastor Profile Showcase Section -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #020c15 0%, #041C2C 100%); padding: 90px 0;">
+        <div class="section-container">
+            <div class="pastor-card-luxury">
+                <div class="pastor-img-container">
+                    <img src="assets/img/pastor robert.jpg" alt="Pastor Principal Robert">
+                </div>
+                <div class="pastor-info-content">
+                    <span class="eyebrow-badge" style="margin-bottom: 12px;"><i class="fas fa-crown"></i> Pastor Principal</span>
+                    <h2 class="elegant-heading" style="font-size: 2.8rem; margin-bottom: 15px; color: #ffffff;">
+                        Pastor Robert
+                    </h2>
+                    <div class="divider-gold" style="margin-bottom: 25px;"></div>
+                    
+                    <p class="text-muted" style="line-height: 1.8; font-size: 1.08rem; margin-bottom: 20px;">
+                        Con años de fiel trayectoria ministerial y un profundo corazón pastoral, el Pastor Robert dirige a El Faro con una visión inspiradora: equipar y afirmar a cada creyente para brillar con la luz de Cristo en medio de la sociedad.
+                    </p>
+                    
+                    <div style="background: rgba(255, 220, 51, 0.08); border-left: 3px solid #FFD200; border-radius: 0 16px 16px 0; padding: 20px; margin-bottom: 30px;">
+                        <p style="color: #ffffff; font-style: italic; font-size: 1rem; line-height: 1.7; margin: 0;">
+                            "Nuestra mayor alegría es presenciar cómo el amor de Jesús restaura familias, sana heridas y transforma realidades. En El Faro, tú y tu familia siempre tienen un hogar."
+                        </p>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Conéctate:</span>
+                        <a href="https://facebook.com/ElFarocvc" target="_blank" class="social-pill-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/ElFarocvc" target="_blank" class="social-pill-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com/c/ElFarocvc" target="_blank" class="social-pill-link" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Glassmorphic CTA Pastoral Appointment Card -->
+    <section class="luxury-section" style="background: linear-gradient(180deg, #041C2C 0%, #020c15 100%); padding: 90px 0;">
+        <div class="section-container text-center">
+            <div style="background: linear-gradient(145deg, rgba(7, 42, 66, 0.7) 0%, rgba(4, 28, 44, 0.9) 100%); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 220, 51, 0.35); border-radius: 32px; padding: 55px 40px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5); max-width: 850px; margin: 0 auto; position: relative; overflow: hidden;">
+                
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 210, 0, 0.15); border: 1px solid rgba(255, 210, 0, 0.4); display: flex; align-items: center; justify-content: center; color: #FFD200; font-size: 2.2rem; margin: 0 auto 25px; box-shadow: 0 0 30px rgba(255, 210, 0, 0.2);">
+                    <i class="far fa-comments"></i>
+                </div>
+
+                <h2 class="elegant-heading" style="font-size: 2.5rem; margin-bottom: 15px;">
+                    Hablemos Cara a Cara
+                </h2>
+                <p class="text-muted" style="max-width: 650px; margin: 0 auto 35px; font-size: 1.08rem; line-height: 1.7;">
+                    Si necesitas consejería familiar, orientación espiritual o simplemente deseas presentarte, nos encantaría escucharte y orar contigo.
+                </p>
+
+                <button id="btn-agenda-modal" class="btn-solid-primary" style="cursor: pointer; font-family: inherit; font-size: 1.1rem; padding: 16px 45px; border-radius: 12px; font-weight: 700; box-shadow: 0 10px 25px rgba(255, 210, 0, 0.35); transition: all 0.3s ease;">
+                    Agendar Cita Pastoral <i class="far fa-calendar-alt" style="margin-left: 10px;"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agenda Modal -->
+    <div id="agenda-modal" class="agenda-modal-overlay">
+        <div class="agenda-modal-content">
+            <span class="close-modal-btn" id="close-agenda">&times;</span>
+            <div class="agenda-header">
+                <h2>Agenda tu Cita Pastoral</h2>
+                <p>Selecciona una fecha disponible para ser atendido</p>
+            </div>
+            <div class="agenda-body">
+                <div class="agenda-calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month" type="button"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="current-month-year">Mes Año</h3>
+                        <button id="next-month" type="button"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                    </div>
+                    <div class="calendar-days" id="calendar-days">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+                <div class="agenda-details" id="agenda-details" style="display: none;">
+                    <h4>Horarios para el <span id="selected-date-text"></span></h4>
+                    <div class="time-slots" id="time-slots">
+                        <!-- Generado por JS -->
+                    </div>
+                    
+                    <form id="agenda-form" class="luxury-form" style="display: none; margin-top: 20px;">
+                        <h4 style="margin-bottom: 15px;">Tus Datos</h4>
+                        <div class="input-group">
+                            <input type="text" id="agenda-name" placeholder="Tu Nombre Completo" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="agenda-email" placeholder="Tu Correo Electrónico" required>
+                        </div>
+                        <button type="submit" class="btn-solid-primary full-width">Confirmar Cita Pastoral</button>
+                    </form>
+                </div>
+                <div id="agenda-success" class="agenda-success" style="display: none; text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 3.5rem; color: var(--color-accent); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 10px; color: var(--text-dark);">¡Cita Pastoral Confirmada!</h3>
+                    <p style="color: var(--text-dark);">Hemos registrado tu solicitud. El equipo pastoral se pondrá en contacto contigo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="luxury-footer">
+        <div class="footer-container">
+            <div class="footer-col brand-col">
+                <img src="assets/img/logo.png" alt="Logo El Faro" class="footer-logo">
+                <p class="footer-desc">Centro de Vida Cristiana.<br>Un lugar de fe, esperanza y amor.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/elfarocvc" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/elfarocvc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@elfarocvc" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="inicio.html">Inicio</a></li>
+                    <li><a href="inicio.html#crecimiento">Crecimiento</a></li>
+                    <li><a href="inicio.html#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="inicio.html#eventos">Eventos</a></li>
+                    <li><a href="inicio.html#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-map-marker-alt"></i> Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia</p>
+                <p><i class="fas fa-phone"></i> +591 3 345 6789</p>
+                <p><i class="fas fa-envelope"></i> info@elfarocvc.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 El Faro Centro de Vida Cristiana. Todos los derechos reservados. <a href="admin.html" style="color: rgba(255,255,255,0.15); text-decoration: none; margin-left: 10px; font-size: 0.75rem;" title="Acceso Administrativo" aria-label="Acceso Admin"><i class="fas fa-lock"></i> Admin</a></p>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="https://wa.me/59179878844" target="_blank" class="fab-btn fab-whatsapp" data-tooltip="Escríbenos por WhatsApp" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <button class="fab-btn fab-scroll-top" id="scrollTopBtn" data-tooltip="Volver arriba" aria-label="Subir" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="agenda.js"></script>
+    <script src="app.js"></script>
+    <script src="cms-loader.js"></script>
+    <script src="cms-visual-editor.js"></script>
+</body>
+</html>

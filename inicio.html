@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | El Faro Centro de Vida Cristiana</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <!-- Google Fonts: Inter para textos limpios, Playfair Display para elegancia -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style-inicio.css">
+</head>
+<body>
+    
+    <!-- ================= NAVEGACIÓN (Estilo Urubó) ================= -->
+    <header id="header" class="luxury-header">
+        <div class="header-container">
+            <a href="inicio.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo El Faro">
+            </a>
+            
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#crecimiento">Crecimiento</a></li>
+                    <li><a href="#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="#eventos">Eventos</a></li>
+                                        <li class="dropdown">
+                        <a href="javascript:void(0)">Ministerios <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                            <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                            <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                            <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                            <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                            <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                            <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                            <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                            <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                            <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)">Prédicas <i class="fas fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i></a>
+                        <ul class="submenu">
+                            <li><a href="galeria-videos.html">Videos</a></li>
+                            <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contacto">Contacto</a></li>
+                    <li class="nav-btn-container"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold">Diezmos y Ofrendas</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Botón Hamburguesa -->
+            <div class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav" id="mobileNav">
+        <i class="fas fa-times close-menu" id="closeMenu"></i>
+        <ul>
+            <li><a href="#hero">Inicio</a></li>
+            <li><a href="#crecimiento">Crecimiento</a></li>
+            <li><a href="#ministerios">Nuestra Iglesia</a></li>
+            <li><a href="#eventos">Eventos</a></li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Ministerios <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="min-matrimonios.html">Ministerio de Matrimonios</a></li>
+                    <li><a href="min-servicio.html">Ministerio de Servicio</a></li>
+                    <li><a href="min-jovenes.html">Ministerio de Jóvenes</a></li>
+                    <li><a href="min-ninos.html">Ministerio de Niños</a></li>
+                    <li><a href="min-adolescentes.html">Ministerio de Adolescentes</a></li>
+                    <li><a href="min-intercesion.html">Ministerio de Intercesión</a></li>
+                    <li><a href="min-adoracion.html">Ministerio de Adoración</a></li>
+                    <li><a href="min-educacion.html">Departamento de Educación Cristiana</a></li>
+                    <li><a href="min-damas.html">Ministerio de Damas</a></li>
+                    <li><a href="min-proyecto-daniel.html">Ministerio Proyecto Daniel</a></li>
+                </ul>
+            </li>
+            <li class="mobile-dropdown">
+                <a href="javascript:void(0)" class="mobile-dropdown-toggle">Prédicas <i class="fas fa-caret-down"></i></a>
+                <ul class="mobile-submenu">
+                    <li><a href="galeria-videos.html">Videos</a></li>
+                    <li><a href="galeria-imagenes.html">Imágenes</a></li>
+                </ul>
+            </li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li style="margin-top: 15px;"><a href="diezmos-y-ofrendas.html" class="btn-outline-gold" style="display: inline-block; text-align: center; width: 100%;">Diezmos y Ofrendas</a></li>
+        </ul>
+    </div>
+
+    <!-- ================= HERO SECTION (CAROUSEL) ================= -->
+    <section id="hero" class="hero-fullscreen">
+        
+        <div class="hero-carousel">
+            <!-- Slide 1 -->
+            <div class="hero-slide active">
+                <img src="assets/img/worship.jpg" alt="Alabanza">
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="hero-slide">
+                <img src="assets/img/paloma.jpg" alt="Espíritu Santo">
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="hero-slide">
+                <img src="assets/img/primera-vez.jpg" alt="Comunidad">
+                <div class="hero-overlay"></div>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <h1 class="elegant-title">¿Buscas amigos, familia y<br>aprender más de Dios?</h1>
+            <p class="elegant-subtitle">Inscríbete y sé parte de nuestra comunidad.<br>Iniciamos una nueva temporada de crecimiento espiritual.</p>
+            <a href="#crecimiento" class="btn-solid-primary">Conoce Más</a>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="carousel-controls">
+            <div class="carousel-btn prev-btn" id="heroPrev">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="carousel-line"></div>
+            <div class="carousel-btn next-btn" id="heroNext">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ================= DISFRUTAMOS LO QUE HACEMOS (VIDEO) ================= -->
+    <section id="sobre-nosotros" class="luxury-section video-feature-section">
+        <div class="section-container split-section-video">
+            <div class="split-content text-light">
+                <span class="subtitle-gold">Nuestra Esencia & Visión</span>
+                <h2 class="elegant-heading text-light" style="font-size: 2.8rem; margin-bottom: 15px;">Disfrutamos Lo Que Hacemos</h2>
+                <div class="divider-gold" style="margin-left: 0;"></div>
+                
+                <p class="section-text text-light-muted">
+                    Somos una iglesia cristiana comprometida con formar valores, acompañar procesos de vida y acercar a cada persona a una relación genuina con Dios. Creemos en el amor, el servicio y la transformación que nace cuando caminamos juntos con propósito.
+                </p>
+
+                <!-- Tarjetas de Pilares -->
+                <div class="essence-highlights">
+                    <div class="essence-card">
+                        <div class="essence-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="essence-info">
+                            <h4>Amor & Servicio</h4>
+                            <p>Caminamos juntos con propósito y entrega.</p>
+                        </div>
+                    </div>
+
+                    <div class="essence-card">
+                        <div class="essence-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="essence-info">
+                            <h4>Transformación de Vida</h4>
+                            <p>Procesos reales de crecimiento espiritual.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="split-video">
+                <div class="video-luxury-frame">
+                    <div class="video-wrapper">
+                        <iframe 
+                            src="https://www.youtube.com/embed/ygfoYSzTPU4" 
+                            title="YouTube Shorts player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen
+                            style="width: 100%; aspect-ratio: 9/16; display: block;">
+                        </iframe>
+                    </div>
+
+                    <div class="frame-bottom-badge">
+                        <i class="fas fa-video"></i>
+                        <span>Conoce nuestra comunidad</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CONVERSEMOS SIN FILTRO ================= -->
+    <section id="citas" class="luxury-section appointment-wrapper-section">
+        <div class="section-container">
+            <div class="appointment-luxury-card">
+                <div class="appointment-content">
+                    <span class="subtitle-gold">Conexión Personal</span>
+                    <h2 class="elegant-heading uppercase-heading text-light" style="font-size: 2.4rem; margin-bottom: 12px;">Conversemos Sin Filtro</h2>
+                    <div class="divider-gold" style="margin-left: 0; margin-bottom: 18px;"></div>
+                    <p class="section-text text-light-muted" style="margin-bottom: 0;">
+                        Si aún no asistes a ninguna Iglesia y quieres crecer espiritualmente,<br>agenda una cita virtual con nosotros. ¡Queremos conocerte y acompañarte!
+                    </p>
+                </div>
+
+                <div class="appointment-action">
+                    <div class="calendar-icon-badge">
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+                    <button id="btn-agenda-modal" class="btn-solid-white" style="cursor: pointer; font-family: inherit;">Agendar cita virtual</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= GRUPOS DE CRECIMIENTO ================= -->
+    <section id="crecimiento" class="luxury-section dark-bg relative" style="overflow: hidden;">
+        <!-- Ambient Background Aura Glow -->
+        <div style="position: absolute; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255,220,51,0.06) 0%, transparent 70%); top: 5%; left: -120px; pointer-events: none;"></div>
+
+        <div class="section-container">
+            <div class="section-header text-center">
+                <span class="subtitle-gold" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; background: rgba(255,220,51,0.1); border: 1px solid var(--color-accent); border-radius: 30px; margin-bottom: 15px;"><i class="fas fa-seedling"></i> Conexión & Crecimiento</span>
+                <h2 class="elegant-heading">Grupos de Crecimiento</h2>
+                <div class="divider-gold center"></div>
+                <p class="section-text" style="max-width: 600px; margin: 0 auto 40px; color: var(--text-light); opacity: 0.9;">
+                    No fuiste creado para vivir la vida solo. Encuentra tu lugar, haz amigos sinceros y crece en tu fe junto a nuestra familia.
+                </p>
+            </div>
+
+            <div class="cards-grid-elegant">
+                <!-- Tarjeta 1 -->
+                <div class="elegant-card">
+                    <div class="card-img" style="position: relative;">
+                        <img src="assets/img/primera-vez.jpg" alt="Primera Vez">
+                        <span class="badge-mini-gold" style="position: absolute; top: 18px; left: 18px; background: rgba(4,28,44,0.85); backdrop-filter: blur(10px); border: 1px solid var(--color-accent); color: var(--color-accent); font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-hand-holding-heart"></i> Bienvenida</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>¿Primera Vez?</h3>
+                        <p>Queremos conocerte personalmente y guiarte con amor en tus primeros pasos de fe.</p>
+                        <a href="primera-vez.html" class="link-gold"><span>Conocer Más</span> <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2 -->
+                <div class="elegant-card">
+                    <div class="card-img" style="position: relative;">
+                        <img src="assets/img/comunidad.jpg" alt="Grupos de Casa">
+                        <span class="badge-mini-gold" style="position: absolute; top: 18px; left: 18px; background: rgba(4,28,44,0.85); backdrop-filter: blur(10px); border: 1px solid var(--color-accent); color: var(--color-accent); font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-users-rays"></i> Comunidad</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>Nuestros Grupos</h3>
+                        <p>Reuniones semanales en hogares para compartir la Palabra, orar y convivir juntos.</p>
+                        <a href="grupos.html" class="link-gold"><span>Unirme Ahora</span> <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 3 -->
+                <div class="elegant-card">
+                    <div class="card-img" style="position: relative;">
+                        <img src="assets/img/pastor robert.jpg" alt="Pastores" style="object-position: top center;">
+                        <span class="badge-mini-gold" style="position: absolute; top: 18px; left: 18px; background: rgba(4,28,44,0.85); backdrop-filter: blur(10px); border: 1px solid var(--color-accent); color: var(--color-accent); font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-user-shield"></i> Liderazgo</span>
+                    </div>
+                    <div class="card-info">
+                        <h3>Conoce a Nuestros Pastores</h3>
+                        <p>Liderazgo, amor pastoral y guía espiritual dedicada para ti y toda tu familia.</p>
+                        <a href="pastores.html" class="link-gold"><span>Leer Historia</span> <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= MINISTERIOS ================= -->
+    <section id="ministerios" class="luxury-section darker-bg relative" style="overflow: hidden;">
+        <!-- Ambient Background Glow -->
+        <div style="position: absolute; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255,220,51,0.06) 0%, transparent 70%); bottom: 0; left: -100px; pointer-events: none;"></div>
+
+        <div class="section-container split-section">
+            <div class="split-content">
+                <span class="subtitle-gold" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; background: rgba(255, 220, 51, 0.1); border: 1px solid var(--color-accent); border-radius: 30px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"><i class="fas fa-church"></i> Nuestra Iglesia</span>
+                <h2 class="elegant-heading" style="font-size: 2.6rem; margin-bottom: 15px;">Ministerios para<br><span style="color: var(--color-accent);">toda la familia</span></h2>
+                <div class="divider-gold-left" style="margin-bottom: 20px;"></div>
+                <p class="section-text" style="color: var(--text-light); opacity: 0.9; font-size: 1.02rem; line-height: 1.7; margin-bottom: 30px;">
+                    Creemos en empoderar a cada miembro de la familia. Desde los más pequeños hasta los adultos mayores, tenemos un espacio diseñado para que crezcas, formes amistades y sirvas con tus dones.
+                </p>
+
+                <!-- INTERACTIVE MINISTRY CARDS LIST -->
+                <div class="ministries-interactive-list">
+                    <a href="min-adoracion.html" class="ministry-pill-card">
+                        <div class="pill-icon-box"><i class="fas fa-music"></i></div>
+                        <div class="pill-info">
+                            <h4>Ministerio de Adoración</h4>
+                            <span>Música, alabanza y artes para honrar a Dios</span>
+                        </div>
+                        <i class="fas fa-chevron-right pill-arrow"></i>
+                    </a>
+
+                    <a href="min-jovenes.html" class="ministry-pill-card">
+                        <div class="pill-icon-box"><i class="fas fa-fire"></i></div>
+                        <div class="pill-info">
+                            <h4>Generación Faro (Jóvenes)</h4>
+                            <span>Pasión, propósito y conexión para la juventud</span>
+                        </div>
+                        <i class="fas fa-chevron-right pill-arrow"></i>
+                    </a>
+
+                    <a href="min-ninos.html" class="ministry-pill-card">
+                        <div class="pill-icon-box"><i class="fas fa-child"></i></div>
+                        <div class="pill-info">
+                            <h4>Ministerio de Niños (Kids)</h4>
+                            <span>Enseñanzas dinámicas y valores cristianos</span>
+                        </div>
+                        <i class="fas fa-chevron-right pill-arrow"></i>
+                    </a>
+
+                    <a href="min-matrimonios.html" class="ministry-pill-card">
+                        <div class="pill-icon-box"><i class="fas fa-heart"></i></div>
+                        <div class="pill-info">
+                            <h4>Ministerio de Matrimonios</h4>
+                            <span>Fortaleciendo hogares con principios bíblicos</span>
+                        </div>
+                        <i class="fas fa-chevron-right pill-arrow"></i>
+                    </a>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <a href="grupos.html" class="btn-solid-primary" style="padding: 14px 28px; border-radius: 14px; display: inline-flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-layer-group"></i> Ver Todos los Ministerios
+                    </a>
+                </div>
+            </div>
+
+            <!-- LUXURY DISPLAY IMAGE WITH FLOATING BADGES -->
+            <div class="split-image-luxury">
+                <div class="luxury-image-wrapper">
+                    <img src="assets/img/reunion-general.jpg" alt="Reunión General de la Iglesia">
+                    <div class="luxury-image-overlay"></div>
+                    
+                    <!-- Floating Stat Badge 1 -->
+                    <div class="floating-glass-badge badge-top-right">
+                        <div class="badge-icon"><i class="fas fa-users"></i></div>
+                        <div>
+                            <strong>9+ Ministerios</strong>
+                            <small>Para todas las edades</small>
+                        </div>
+                    </div>
+
+                    <!-- Floating Stat Badge 2 -->
+                    <div class="floating-glass-badge badge-bottom-left">
+                        <div class="badge-icon gold"><i class="fas fa-star"></i></div>
+                        <div>
+                            <strong>Comunidad Unida</strong>
+                            <small>Amor & Crecimiento</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= EVENTOS ================= -->
+    <section id="eventos" class="luxury-section dark-bg relative" style="overflow: hidden;">
+        <!-- Ambient background aura glow -->
+        <div style="position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,220,51,0.08) 0%, transparent 70%); top: 10%; right: -100px; pointer-events: none;"></div>
+
+        <div class="section-container">
+            <div class="section-header text-center">
+                <span class="subtitle-gold" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; background: rgba(255,220,51,0.1); border: 1px solid var(--color-accent); border-radius: 30px; margin-bottom: 15px;"><i class="fas fa-calendar-star"></i> Participa & Conéctate</span>
+                <h2 class="elegant-heading">Próximos Eventos</h2>
+                <div class="divider-gold center"></div>
+                <p class="section-text" style="max-width: 600px; margin: 0 auto 40px; color: var(--text-light); opacity: 0.9;">
+                    Sé parte de nuestras conferencias, noches de adoración y campamentos diseñados para transformar tu vida y fortalecer tu fe.
+                </p>
+            </div>
+            
+            <!-- MAIN FEATURED EVENT CARD WITH COUNTDOWN -->
+            <div class="luxury-event-card featured-event-card">
+                <div class="event-image-container">
+                    <img src="assets/img/congreso.png" alt="Congreso Fuego & Gloria 2026">
+                    <div class="event-gradient-overlay"></div>
+                    <span class="event-badge-gold"><i class="fas fa-fire"></i> Conferencia Anual</span>
+                    <span class="event-date-pill"><i class="far fa-calendar-alt"></i> 15 - 17 de Noviembre, 2026</span>
+                </div>
+
+                <div class="event-card-content">
+                    <div class="event-location-tag">
+                        <i class="fas fa-map-marker-alt"></i> Auditorio Principal El Faro | 19:30 HRS
+                    </div>
+                    <h3 class="event-card-title">Congreso Especial: Fuego & Gloria 2026</h3>
+                    <p class="event-card-desc">
+                        Prepárate para tres días extraordinarios de renuevo espiritual, plenarias transformadoras y adoración en vivo con predicadores e invitados especiales.
+                    </p>
+
+                    <!-- COUNTDOWN TIMER -->
+                    <div class="event-countdown-wrapper">
+                        <span class="countdown-title">EL EVENTO COMIENZA EN:</span>
+                        <div class="countdown-boxes">
+                            <div class="c-box"><span id="cd-days">15</span><label>Días</label></div>
+                            <div class="c-box"><span id="cd-hours">08</span><label>Horas</label></div>
+                            <div class="c-box"><span id="cd-mins">45</span><label>Min</label></div>
+                            <div class="c-box"><span id="cd-secs">30</span><label>Seg</label></div>
+                        </div>
+                    </div>
+
+                    <div class="event-card-actions">
+                        <a href="#contacto" class="btn-solid-primary" style="padding: 14px 28px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-ticket-alt"></i> Inscribirme Ahora
+                        </a>
+                        <a href="galeria-videos.html" class="btn-outline-gold" style="padding: 14px 24px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-play"></i> Ver Resumen 2025
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECONDARY EVENT CARDS GRID -->
+            <div class="events-grid-secondary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 35px;">
+                
+                <!-- Event Card 2 -->
+                <div class="luxury-event-card-small">
+                    <div class="event-small-img">
+                        <img src="assets/img/adoracion_latinos.png" alt="Noche de Adoración" style="object-position: center center;">
+                        <span class="badge-mini-gold"><i class="fas fa-music"></i> Adoración</span>
+                    </div>
+                    <div class="event-small-body">
+                        <span class="event-date-small"><i class="far fa-clock"></i> Último Viernes del Mes | 19:30 HRS</span>
+                        <h4>Noche de Adoración & Milagros</h4>
+                        <p>Una atmósfera especial para clamar, buscar la presencia de Dios y recibir sanidad.</p>
+                        <a href="#oracion" class="link-gold">Más Información <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Event Card 3 -->
+                <div class="luxury-event-card-small">
+                    <div class="event-small-img">
+                        <img src="assets/img/jovenes_galeria_nueva.jpg" alt="Encuentro de Jóvenes" style="object-position: center 0%;">
+                        <span class="badge-mini-gold"><i class="fas fa-users"></i> Jóvenes</span>
+                    </div>
+                    <div class="event-small-body">
+                        <span class="event-date-small"><i class="far fa-calendar-alt"></i> Sábados Quincenales | 18:00 HRS</span>
+                        <h4>Encuentro Generación Faro</h4>
+                        <p>Música, dinámicas, palabra fresca y un tiempo inolvidable de conexión entre jóvenes.</p>
+                        <a href="min-jovenes.html" class="link-gold">Ver detalles <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PETICIÓN DE ORACIÓN ================= -->
+    <section id="oracion" class="luxury-section prayer-bg-section">
+        <div class="bg-image">
+            <img src="assets/img/peniel-bg.jpg" alt="Fondo Oración">
+            <div class="overlay-dark"></div>
+        </div>
+        <div class="section-container relative z-10">
+            <div class="prayer-box">
+                <div class="text-center">
+                    <span class="eyebrow-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; background: rgba(255, 220, 51, 0.12); border: 1px solid var(--color-accent); border-radius: 30px; color: var(--color-accent); font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 18px;"><i class="fas fa-hands-praying"></i> Intercesión & Oración</span>
+                    <h2 class="elegant-heading text-center" style="font-size: 2.5rem; margin-bottom: 12px;">Estamos aquí para apoyarte</h2>
+                    <div class="divider-gold center" style="margin-bottom: 20px;"></div>
+                    <p class="text-center" style="color: var(--text-light); opacity: 0.9; font-size: 1.05rem; max-width: 550px; margin: 0 auto 35px; line-height: 1.7;">
+                        Deja tu petición de oración y nuestro equipo pastoral intercederá con fe por ti y por tu familia.
+                    </p>
+                </div>
+                
+                <form class="luxury-form" id="prayerForm">
+                    <div class="luxury-input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" class="luxury-input-field" placeholder="Tu Nombre Completo *" required>
+                    </div>
+
+                    <div class="luxury-input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" class="luxury-input-field" placeholder="Tu Correo Electrónico *" required>
+                    </div>
+
+                    <div class="luxury-input-wrapper">
+                        <i class="fas fa-comment-dots input-icon" style="top: 24px;"></i>
+                        <textarea class="luxury-input-field" rows="4" placeholder="¿Cómo podemos orar por ti? *" required style="padding-top: 16px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-prayer-submit full-width">
+                        <span><i class="fas fa-paper-plane btn-icon-fly"></i> ENVIAR PETICIÓN DE ORACIÓN</span>
+                    </button>
+                </form>
+
+                <!-- Dynamic Success Message Container -->
+                <div id="prayerSuccessMsg" style="display: none; text-align: center; padding: 30px 10px; animation: fadeIn 0.5s ease;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 220, 51, 0.15); border: 2px solid var(--color-accent); color: var(--color-accent); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(255, 220, 51, 0.3);">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 class="text-light" style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 10px;">¡Hemos Recibido tu Petición!</h3>
+                    <p style="color: var(--text-light); opacity: 0.9; font-size: 1.1rem; max-width: 500px; margin: 0 auto 15px; line-height: 1.8;">
+                        Nuestro equipo pastoral estará orando por tu necesidad. Confiamos en que Dios hará grandes cosas en tu vida.
+                    </p>
+                    <p style="color: var(--color-accent); font-family: var(--font-heading); font-style: italic; font-size: 1rem;">
+                        "La oración eficaz del justo puede mucho." — Santiago 5:16
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CONTACTO ================= -->
+    <section id="contacto" class="luxury-section contact-section">
+        <div class="section-container">
+            <div class="section-header text-center">
+                <span class="subtitle-gold">Comunícate con Nosotros</span>
+                <h2 class="elegant-heading">Contacto</h2>
+                <div class="divider-gold"></div>
+                <p class="contact-lead-text">¿Tienes preguntas o deseas conectarte con nosotros? Estamos aquí para escucharte y acompañarte.</p>
+            </div>
+            
+            <div class="contact-wrapper">
+                <!-- Formulario de Contacto Lujoso -->
+                <div class="contact-form-card">
+                    <div class="form-header">
+                        <div class="form-header-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-title">Envíanos un Mensaje</h3>
+                            <p class="form-subtitle">Completa el formulario y te responderemos pronto</p>
+                        </div>
+                    </div>
+
+                    <form action="#" method="POST" class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Nombre Completo</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="name" name="name" class="form-input" placeholder="Ej. Juan Pérez" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Teléfono / WhatsApp</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="+591 70000000">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="form-label">Mensaje o Petición</label>
+                            <div class="input-with-icon textarea-icon">
+                                <i class="fas fa-comment-alt input-icon"></i>
+                                <textarea id="message" name="message" class="form-input form-textarea" rows="4" placeholder="Escribe tu mensaje o petición aquí..." required></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-solid-gold btn-submit-contact">
+                            <span>Enviar Mensaje</span>
+                            <i class="fas fa-paper-plane btn-icon"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Ubicación e Información de Contacto -->
+                <div class="contact-info-card">
+                    <div class="info-card-header">
+                        <h3 class="info-title">Nuestra Ubicación & Horarios</h3>
+                        <p class="info-subtitle">Te esperamos en nuestras reuniones presenciales</p>
+                    </div>
+
+                    <div class="contact-info-items">
+                        <div class="info-item">
+                            <div class="info-icon-badge">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Dirección</h4>
+                                <p>Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon-badge">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Teléfono / WhatsApp</h4>
+                                <p>+591 3 345 6789 / +591 700 00000</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon-badge">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Correo Electrónico</h4>
+                                <p>info@elfarocvc.com</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon-badge">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Horarios de Cultos</h4>
+                                <p>Domingos: 09:00 AM y 11:30 AM<br>Miércoles: 07:30 PM (Culto de Oración)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-wrapper">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15197.669865181717!2d-63.1979929!3d-17.772591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDQ2JzIxLjMiUyA2M8KwMTEnNTIuOCJX!5e0!3m2!1ses!2sbo!4v1620000000000!5m2!1ses!2sbo" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="luxury-footer">
+        <div class="footer-container">
+            <div class="footer-col brand-col">
+                <img src="assets/img/logo.png" alt="Logo El Faro" class="footer-logo">
+                <p class="footer-desc">Centro de Vida Cristiana.<br>Un lugar de fe, esperanza y amor.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/elfarocvc" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/elfarocvc" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@elfarocvc" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Enlaces Rápidos</h4>
+                <ul>
+                    <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#crecimiento">Crecimiento</a></li>
+                    <li><a href="#ministerios">Nuestra Iglesia</a></li>
+                    <li><a href="#eventos">Eventos</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-map-marker-alt"></i> Cuarto Anillo Radial 27, Av. Nueva Jerusalén, Calle San Mateo, Santa Cruz de la Sierra, Bolivia</p>
+                <p><i class="fas fa-phone"></i> +591 3 345 6789</p>
+                <p><i class="fas fa-envelope"></i> info@elfarocvc.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 El Faro Centro de Vida Cristiana. Todos los derechos reservados. <a href="admin.html" style="color: rgba(255,255,255,0.15); text-decoration: none; margin-left: 10px; font-size: 0.75rem;" title="Acceso Administrativo" aria-label="Acceso Admin"><i class="fas fa-lock"></i> Admin</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('header');
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+
+            if (header) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                });
+            }
+
+            const slides = document.querySelectorAll('.hero-slide');
+            const nextBtn = document.getElementById('heroNext');
+            const prevBtn = document.getElementById('heroPrev');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    if (i === index) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            if(nextBtn && prevBtn) {
+                nextBtn.addEventListener('click', nextSlide);
+                prevBtn.addEventListener('click', prevSlide);
+                
+                // Auto play every 6 seconds
+                setInterval(nextSlide, 6000);
+            }
+        });
+    </script>
+    <!-- ================= AGENDA MODAL ================= -->
+    <div id="agenda-modal" class="agenda-modal-overlay">
+        <div class="agenda-modal-content">
+            <span class="close-modal-btn" id="close-agenda">&times;</span>
+            <div class="agenda-header">
+                <h2>Agenda tu cita</h2>
+                <p>Selecciona una fecha y hora disponible</p>
+            </div>
+            <div class="agenda-body">
+                <div class="agenda-calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month" type="button"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="current-month-year">Mes Año</h3>
+                        <button id="next-month" type="button"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                    </div>
+                    <div class="calendar-days" id="calendar-days">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+                <div class="agenda-details" id="agenda-details" style="display: none;">
+                    <h4>Horarios para el <span id="selected-date-text"></span></h4>
+                    <div class="time-slots" id="time-slots">
+                        <!-- Generado por JS -->
+                    </div>
+                    
+                    <form id="agenda-form" class="luxury-form" style="display: none; margin-top: 20px;">
+                        <h4 style="margin-bottom: 15px;">Tus Datos</h4>
+                        <div class="input-group">
+                            <input type="text" id="agenda-name" placeholder="Tu Nombre Completo" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="agenda-email" placeholder="Tu Correo Electrónico" required>
+                        </div>
+                        <button type="submit" class="btn-solid-primary full-width">Confirmar Cita</button>
+                    </form>
+                </div>
+                <div id="agenda-success" class="agenda-success" style="display: none; text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 3.5rem; color: var(--color-accent); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 10px; color: var(--text-dark);">¡Cita Confirmada!</h3>
+                    <p style="color: var(--text-dark);">Hemos registrado tu cita con éxito. Te enviaremos un correo con los detalles.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="agenda.js"></script>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="https://wa.me/59179878844" target="_blank" class="fab-btn fab-whatsapp" data-tooltip="Escríbenos por WhatsApp" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <button class="fab-btn fab-scroll-top" id="scrollTopBtn" data-tooltip="Volver arriba" aria-label="Subir" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </div>
+    <script>
+        (function() {
+            var btn = document.getElementById('scrollTopBtn');
+            if (btn) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 300) {
+                        btn.classList.add('visible');
+                    } else {
+                        btn.classList.remove('visible');
+                    }
+                });
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+    <script src="cms-loader.js"></script>
+    <script src="cms-visual-editor.js"></script>
+    <script>
+        // ===== COUNTDOWN TIMER — Congreso Fuego & Gloria 2026 =====
+        (function() {
+            // Target: 15 de Noviembre 2026, 19:30 HRS, Bolivia (UTC-4)
+            var eventDate = new Date('2026-11-15T19:30:00-04:00');
+
+            function updateCountdown() {
+                var now = new Date();
+                var diff = eventDate - now;
+
+                if (diff <= 0) {
+                    // Event has passed — hide countdown, show "¡En Vivo!"
+                    var wrapper = document.querySelector('.event-countdown-wrapper');
+                    if (wrapper) {
+                        wrapper.innerHTML = '<span class="countdown-title" style="color: var(--color-accent); font-size: 1.1rem;">🔴 ¡EVENTO EN CURSO!</span>';
+                    }
+                    return;
+                }
+
+                var days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                var secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+                var dEl = document.getElementById('cd-days');
+                var hEl = document.getElementById('cd-hours');
+                var mEl = document.getElementById('cd-mins');
+                var sEl = document.getElementById('cd-secs');
+
+                if (dEl) dEl.textContent = String(days).padStart(2, '0');
+                if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+                if (mEl) mEl.textContent = String(mins).padStart(2, '0');
+                if (sEl) sEl.textContent = String(secs).padStart(2, '0');
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        })();
+    </script>
+</body>
+</html>
+
+
+
+
