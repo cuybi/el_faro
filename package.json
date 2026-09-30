@@ -2,9 +2,11 @@
   "name": "el-faro",
   "version": "1.0.0",
   "description": "",
-  "main": "admin.js",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "keywords": [],
