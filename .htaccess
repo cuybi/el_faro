@@ -28,8 +28,8 @@ AddDefaultCharset UTF-8
     Deny from all
 </FilesMatch>
 
-# Never cache dynamic JSON data
-<FilesMatch "\.(json)$">
+# Never cache dynamic JSON data or CMS scripts
+<FilesMatch "(cms-data\.json|cms-loader\.js|cms-visual-editor\.js|admin\.js|\.json)$">
     <IfModule mod_headers.c>
         Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
         Header set Pragma "no-cache"

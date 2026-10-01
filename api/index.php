@@ -249,18 +249,17 @@ function seedFromExistingJson($pdo) {
     $data = json_decode($raw, true);
     if (!is_array($data)) return;
 
-    // Seed settings
-    if (isset($data['siteTexts'])) {
-        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('siteTexts', :v)");
-        $stmt->execute([':v' => json_encode($data['siteTexts'], JSON_UNESCAPED_UNICODE)]);
-    }
-    if (isset($data['bankInfo'])) {
-        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('bankInfo', :v)");
-        $stmt->execute([':v' => json_encode($data['bankInfo'], JSON_UNESCAPED_UNICODE)]);
-    }
-    if (isset($data['videos'])) {
-        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('videos', :v)");
-        $stmt->execute([':v' => json_encode($data['videos'], JSON_UNESCAPED_UNICODE)]);
+    $relationalKeys = ['galleryImages', 'prayers', 'appointments', 'contributions'];
+
+    // Seed all general settings dynamically (siteTexts, bankInfo, videos, navTexts, pageEdits, etc.)
+    foreach ($data as $key => $val) {
+        if (in_array($key, $relationalKeys)) continue;
+        if ($key === '_lastServerUpdate' || $key === 'auditTimestamp' || $key === '_lastSavedLocal') continue;
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES (:k, :v)");
+        $stmt->execute([
+            ':k' => $key,
+            ':v' => is_scalar($val) ? (string)$val : json_encode($val, JSON_UNESCAPED_UNICODE)
+        ]);
     }
 
     // Seed gallery
@@ -333,15 +332,15 @@ function readCmsData() {
         $db = getDb();
         $result = [];
 
-        // 1. Settings (siteTexts, bankInfo, videos, etc.)
+        // 1. Settings (siteTexts, bankInfo, videos, navTexts, pageEdits, etc.)
         $stmt = $db->query("SELECT setting_key, setting_value FROM cms_settings");
         while ($row = $stmt->fetch()) {
             $val = json_decode($row['setting_value'], true);
             $result[$row['setting_key']] = ($val !== null) ? $val : $row['setting_value'];
         }
 
-        // 2. Gallery Images
-        $galleryStmt = $db->query("SELECT id, title, category, image_url as imageUrl, date_val as date FROM gallery_images ORDER BY created_at DESC");
+        // 2. Gallery Images (ordered by insertion)
+        $galleryStmt = $db->query("SELECT id, title, category, image_url as imageUrl, date_val as date FROM gallery_images ORDER BY rowid ASC");
         $result['galleryImages'] = $galleryStmt->fetchAll();
 
         // 3. Prayers
@@ -380,22 +379,17 @@ function saveCmsData($newData) {
         $db = getDb();
         $db->beginTransaction();
 
-        // Update siteTexts
-        if (isset($newData['siteTexts'])) {
-            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('siteTexts', :v, CURRENT_TIMESTAMP)");
-            $stmt->execute([':v' => json_encode($newData['siteTexts'], JSON_UNESCAPED_UNICODE)]);
-        }
+        $relationalKeys = ['galleryImages', 'prayers', 'appointments', 'contributions'];
 
-        // Update bankInfo
-        if (isset($newData['bankInfo'])) {
-            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('bankInfo', :v, CURRENT_TIMESTAMP)");
-            $stmt->execute([':v' => json_encode($newData['bankInfo'], JSON_UNESCAPED_UNICODE)]);
-        }
-
-        // Update videos
-        if (isset($newData['videos'])) {
-            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('videos', :v, CURRENT_TIMESTAMP)");
-            $stmt->execute([':v' => json_encode($newData['videos'], JSON_UNESCAPED_UNICODE)]);
+        // Save all settings keys dynamically to cms_settings (siteTexts, bankInfo, videos, navTexts, pageEdits, etc.)
+        foreach ($newData as $key => $val) {
+            if (in_array($key, $relationalKeys)) continue;
+            if ($key === '_lastServerUpdate' || $key === 'auditTimestamp' || $key === '_lastSavedLocal') continue;
+            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES (:k, :v, CURRENT_TIMESTAMP)");
+            $stmt->execute([
+                ':k' => $key,
+                ':v' => is_scalar($val) ? (string)$val : json_encode($val, JSON_UNESCAPED_UNICODE)
+            ]);
         }
 
         // Update galleryImages
