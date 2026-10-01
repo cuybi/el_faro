@@ -901,15 +901,15 @@
             <h2>Acceso Administrativo</h2>
             <p class="subtitle">Introduce tu correo y contraseña para gestionar el sitio web.</p>
 
-            <form id="loginForm" style="text-align: left;" onsubmit="return handleLoginSubmit(event);">
+            <form id="loginForm" style="text-align: left;" onsubmit="return handleLoginSubmit(event);" autocomplete="off">
                 <div class="login-input-wrapper">
                     <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="loginEmail" class="login-input-field" placeholder="admin@elfarocvc.com" autocomplete="username" required>
+                    <input type="email" id="loginEmail" class="login-input-field" placeholder="Correo electrónico" autocomplete="new-password" required>
                 </div>
 
                 <div class="login-input-wrapper">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="loginPassword" class="login-input-field" placeholder="Introduce tu contraseña" autocomplete="current-password" required style="padding-right: 48px;">
+                    <input type="password" id="loginPassword" class="login-input-field" placeholder="Contraseña" autocomplete="new-password" required style="padding-right: 48px;">
                     <button type="button" id="togglePasswordBtn" class="eye-toggle-btn" onclick="togglePasswordVisibility()" title="Mostrar/Ocultar Contraseña">
                         <i class="fas fa-eye" id="togglePasswordIcon"></i>
                     </button>
