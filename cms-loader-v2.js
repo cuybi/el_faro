@@ -285,11 +285,130 @@
       });
     }
 
-    // 3. Dynamic Image Gallery Render (only if plain grid, never override luxury category cards)
+    // Helper: Normalize category strings for reliable cross-matching
+    function normalizeCategory(cat) {
+      if (!cat) return '';
+      return cat.toString().toLowerCase().trim()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    // Ensure Lightbox modal exists on any page that displays photos
+    function ensureLightbox() {
+      if (document.getElementById('galleryLightbox')) return;
+      const lb = document.createElement('div');
+      lb.id = 'galleryLightbox';
+      lb.className = 'lightbox-modal';
+      lb.onclick = function(e) { window.closeLightbox(e); };
+      lb.innerHTML = `
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+            <img id="lightboxImg" src="" alt="Ampliada">
+            <div id="lightboxCaption" style="padding: 16px; background: rgba(4,28,44,0.95); color: var(--color-accent, #FFD200); font-family: var(--font-heading, 'Playfair Display', serif); text-align: center; font-size: 1.2rem; border-top: 1px solid rgba(255,220,51,0.25);"></div>
+        </div>
+      `;
+      document.body.appendChild(lb);
+    }
+
+    window.openLightbox = function(src, caption) {
+      ensureLightbox();
+      const lb = document.getElementById('galleryLightbox');
+      const img = document.getElementById('lightboxImg');
+      const cap = document.getElementById('lightboxCaption');
+      if (lb && img) {
+        img.src = src;
+        if (cap) cap.innerText = caption || '';
+        lb.style.display = 'flex';
+      }
+    };
+
+    window.closeLightbox = function(e) {
+      if (!e || e.target.id === 'galleryLightbox' || (e.target.classList && e.target.classList.contains('lightbox-close'))) {
+        const lb = document.getElementById('galleryLightbox');
+        if (lb) lb.style.display = 'none';
+      }
+    };
+
+    // 3a. Dynamic Category Gallery Rendering (for galeria-jovenes, galeria-adoracion, galeria-ninos, etc.)
+    const masonryGrid = document.querySelector('.masonry-grid');
+    if (masonryGrid && data.galleryImages && Array.isArray(data.galleryImages)) {
+      ensureLightbox();
+      
+      // Detect current category from page URL or heading
+      const path = (window.location.pathname || '').toLowerCase();
+      let currentCategory = null;
+      if (path.includes('galeria-jovenes') || path.includes('min-jovenes')) currentCategory = 'jovenes';
+      else if (path.includes('galeria-adoracion') || path.includes('min-adoracion')) currentCategory = 'adoracion';
+      else if (path.includes('galeria-ninos') || path.includes('min-ninos')) currentCategory = 'ninos';
+      else if (path.includes('galeria-familias') || path.includes('min-matrimonios')) currentCategory = 'familias';
+      else if (path.includes('galeria-comunidad') || path.includes('min-servicio')) currentCategory = 'comunidad';
+      else if (path.includes('galeria-predicas')) currentCategory = 'predicas';
+
+      // Fallback: check h1 text if URL doesn't match
+      if (!currentCategory) {
+        const h1 = document.querySelector('h1.elegant-heading');
+        const h1Text = h1 ? normalizeCategory(h1.innerText) : '';
+        if (h1Text.includes('joven')) currentCategory = 'jovenes';
+        else if (h1Text.includes('adoracion')) currentCategory = 'adoracion';
+        else if (h1Text.includes('nino')) currentCategory = 'ninos';
+        else if (h1Text.includes('familia') || h1Text.includes('matrimonio')) currentCategory = 'familias';
+        else if (h1Text.includes('comunidad') || h1Text.includes('servicio')) currentCategory = 'comunidad';
+        else if (h1Text.includes('predica')) currentCategory = 'predicas';
+      }
+
+      if (currentCategory) {
+        const matchingImages = data.galleryImages.filter(img => {
+          return normalizeCategory(img.category) === normalizeCategory(currentCategory);
+        });
+
+        if (matchingImages.length > 0) {
+          masonryGrid.innerHTML = matchingImages.map(img => {
+            const rawTitle = (img.title || '').trim();
+            const safeCaption = rawTitle.replace(/'/g, "\\'");
+            return `
+              <div class="masonry-item" onclick="openLightbox('${img.imageUrl}', '${safeCaption}')" style="cursor: pointer;">
+                  <img src="${img.imageUrl}" alt="${rawTitle || 'Foto'}" loading="lazy">
+                  <div class="masonry-overlay"><span>${rawTitle || ''}</span></div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Attach lightbox click handlers to all items (including static fallbacks)
+      masonryGrid.querySelectorAll('.masonry-item').forEach(item => {
+        if (!item.getAttribute('onclick')) {
+          item.addEventListener('click', () => {
+            const img = item.querySelector('img');
+            const span = item.querySelector('.masonry-overlay span');
+            if (img && window.openLightbox) {
+              window.openLightbox(img.src, span ? span.innerText : (img.alt || ''));
+            }
+          });
+        }
+      });
+    }
+
+    // 3b. Update category card preview thumbnails on galeria-imagenes.html
+    if (data.galleryImages && Array.isArray(data.galleryImages)) {
+      document.querySelectorAll('.luxury-gallery-card[data-category]').forEach(card => {
+        const cat = card.dataset.category;
+        if (!cat) return;
+        const matching = data.galleryImages.filter(img => normalizeCategory(img.category) === normalizeCategory(cat));
+        if (matching.length > 0) {
+          const latestImg = matching[0];
+          const thumbImg = card.querySelector('.gallery-card-thumb img');
+          if (thumbImg && latestImg && latestImg.imageUrl) {
+            thumbImg.src = latestImg.imageUrl;
+          }
+        }
+      });
+    }
+
+    // 3c. Dynamic Image Gallery Render (only if plain grid, never override luxury category cards)
     const galleryGrid = document.getElementById('cms-gallery-grid');
     if (galleryGrid && !galleryGrid.classList.contains('luxury-gallery-grid') && data.galleryImages && Array.isArray(data.galleryImages)) {
       galleryGrid.innerHTML = data.galleryImages.map(img => `
-        <div class="gallery-item" data-category="${img.category || 'todas'}">
+        <div class="gallery-item" data-category="${img.category || 'todas'}" onclick="openLightbox('${img.imageUrl}', '${(img.title || '').replace(/'/g, "\\'")}')" style="cursor: pointer;">
             <img src="${img.imageUrl}" alt="${img.title}">
             <div class="gallery-overlay">
                 <div class="gallery-caption">

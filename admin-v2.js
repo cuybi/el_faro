@@ -318,6 +318,11 @@
     const previewBox = document.getElementById('newImgPreviewBox');
     const previewImg = document.getElementById('newImgPreviewImg');
     const urlInput = document.getElementById('newImgUrl');
+    const nameEl = document.getElementById('previewFileName');
+    const sizeEl = document.getElementById('previewFileSize');
+    const mainTextEl = document.getElementById('dropzoneMainText');
+    const subTextEl = document.getElementById('dropzoneSubText');
+    const dropzone = document.getElementById('fileDropzone');
 
     if (!file) {
       pendingImageUpload = null;
@@ -326,7 +331,7 @@
     }
 
     if (file.size > 15 * 1024 * 1024) {
-      alert('La imagen seleccionada supera el límite máximo permitido de 15MB.');
+      showToast('La imagen seleccionada supera el límite de 15MB.', 'warning');
       e.target.value = '';
       pendingImageUpload = null;
       if (previewBox) previewBox.style.display = 'none';
@@ -340,22 +345,50 @@
         data: evt.target.result
       };
       if (previewImg) previewImg.src = evt.target.result;
+      if (nameEl) nameEl.innerText = file.name;
+      if (sizeEl) sizeEl.innerText = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
       if (previewBox) previewBox.style.display = 'block';
       if (urlInput) urlInput.value = '';
+      if (mainTextEl) mainTextEl.innerText = file.name;
+      if (subTextEl) subTextEl.innerText = 'Haz clic o arrastra para cambiar';
+      if (dropzone) dropzone.classList.add('has-file');
     };
     reader.readAsDataURL(file);
+  };
+
+  window.clearSelectedImage = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    pendingImageUpload = null;
+    const fileInput = document.getElementById('newImgFile');
+    if (fileInput) fileInput.value = '';
+    const previewBox = document.getElementById('newImgPreviewBox');
+    const previewImg = document.getElementById('newImgPreviewImg');
+    if (previewBox) previewBox.style.display = 'none';
+    if (previewImg) previewImg.src = '';
+    const mainTextEl = document.getElementById('dropzoneMainText');
+    const subTextEl = document.getElementById('dropzoneSubText');
+    const dropzone = document.getElementById('fileDropzone');
+    if (mainTextEl) mainTextEl.innerText = 'Haz clic para seleccionar o arrastra una foto';
+    if (subTextEl) subTextEl.innerText = 'Admite archivos JPG, PNG, WEBP (Hasta 15 MB)';
+    if (dropzone) dropzone.classList.remove('has-file');
   };
 
   window.handleImageUrlInput = function(val) {
     const previewBox = document.getElementById('newImgPreviewBox');
     const previewImg = document.getElementById('newImgPreviewImg');
     const fileInput = document.getElementById('newImgFile');
+    const nameEl = document.getElementById('previewFileName');
+    const sizeEl = document.getElementById('previewFileSize');
 
     const cleanVal = (val || '').trim();
     if (cleanVal) {
-      pendingImageUpload = null;
-      if (fileInput) fileInput.value = '';
+      window.clearSelectedImage();
       if (previewImg) previewImg.src = cleanVal;
+      if (nameEl) nameEl.innerText = cleanVal.split('/').pop() || 'URL Externa';
+      if (sizeEl) sizeEl.innerText = 'Enlace remoto / Ruta';
       if (previewBox) previewBox.style.display = 'block';
     } else {
       if (!pendingImageUpload && previewBox) {
@@ -369,19 +402,51 @@
     if (modal) {
       const form = modal.querySelector('form');
       if (form) form.reset();
-      pendingImageUpload = null;
-      const previewBox = document.getElementById('newImgPreviewBox');
-      const previewImg = document.getElementById('newImgPreviewImg');
-      if (previewBox) previewBox.style.display = 'none';
-      if (previewImg) previewImg.src = '';
+      window.clearSelectedImage();
       const btn = document.getElementById('btnPublishImage');
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> PUBLICAR FOTO EN GALERÍA';
       }
       modal.style.display = 'flex';
+      setupDropzone();
     }
   };
+
+  // Setup Drag & Drop for file dropzone
+  function setupDropzone() {
+    const dropzone = document.getElementById('fileDropzone');
+    if (!dropzone || dropzone.dataset.dropzoneInit) return;
+    dropzone.dataset.dropzoneInit = 'true';
+
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('drag-active');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('drag-active');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt && dt.files;
+      if (files && files.length > 0) {
+        const input = document.getElementById('newImgFile');
+        if (input) {
+          input.files = files;
+          window.handleImageFileSelect({ target: input });
+        }
+      }
+    }, false);
+  }
 
   window.closeModal = function(modalId) {
     const modal = document.getElementById(modalId);

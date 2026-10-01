@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -689,6 +689,144 @@
             padding: 14px 16px;
             outline: none;
             transition: all 0.25s ease;
+        }
+
+        /* Fix: ensure all inputs with an icon inside .login-input-wrapper have generous left indentation */
+        .login-input-wrapper {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .login-input-wrapper i.input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 220, 51, 0.85);
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 5;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .login-input-wrapper input,
+        .login-input-wrapper select,
+        .login-input-wrapper textarea,
+        .admin-modal-content .login-input-wrapper input,
+        .admin-modal-content .login-input-wrapper select,
+        .admin-modal-content .login-input-wrapper textarea {
+            padding-left: 50px !important;
+        }
+
+        .admin-modal-content select,
+        .login-input-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FFD200' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 18px center !important;
+            background-size: 16px !important;
+            padding-right: 44px !important;
+            cursor: pointer;
+        }
+
+        /* Luxury File Dropzone Card */
+        .luxury-file-dropzone {
+            background: linear-gradient(145deg, rgba(2, 16, 26, 0.8) 0%, rgba(4, 28, 44, 0.7) 100%);
+            border: 2px dashed rgba(255, 220, 51, 0.35);
+            border-radius: 16px;
+            padding: 20px 22px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .luxury-file-dropzone:hover,
+        .luxury-file-dropzone.drag-active {
+            border-color: var(--color-accent);
+            background: linear-gradient(145deg, rgba(7, 42, 66, 0.9) 0%, rgba(4, 28, 44, 0.9) 100%);
+            box-shadow: 0 0 25px rgba(255, 220, 51, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .luxury-file-dropzone.has-file {
+            border-color: #48bb78;
+            border-style: solid;
+            background: rgba(72, 187, 120, 0.08);
+        }
+
+        .dropzone-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dropzone-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255, 220, 51, 0.12);
+            border: 1px solid rgba(255, 220, 51, 0.3);
+            color: var(--color-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .luxury-file-dropzone:hover .dropzone-icon {
+            transform: scale(1.08);
+            background: rgba(255, 220, 51, 0.22);
+            box-shadow: 0 0 16px rgba(255, 220, 51, 0.3);
+        }
+
+        .dropzone-text-block {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .dropzone-main-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropzone-sub-text {
+            color: #a0aec0;
+            font-size: 0.8rem;
+        }
+
+        .dropzone-btn {
+            background: linear-gradient(135deg, #FFDC33 0%, #E6B800 100%);
+            color: #041C2C;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(255, 220, 51, 0.25);
+            transition: all 0.25s ease;
+        }
+
+        .luxury-file-dropzone:hover .dropzone-btn {
+            box-shadow: 0 0 16px rgba(255, 220, 51, 0.5);
         }
 
         .admin-modal-content input:focus,
@@ -1596,14 +1734,41 @@
                 </div>
 
                 <!-- Opción A: Subir Foto desde Celular / Computadora -->
-                <div class="input-group" style="margin-bottom: 18px;">
-                    <label style="display: block; color: var(--color-accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-upload"></i> 1. Subir Foto desde tu Equipo (Recomendado)</label>
-                    <input type="file" id="newImgFile" accept="image/*" class="login-input-field" style="padding: 10px; cursor: pointer; background: rgba(7,42,66,0.6);" onchange="handleImageFileSelect(event)">
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label style="display: block; color: var(--color-accent); font-size: 0.88rem; font-weight: 700; margin-bottom: 10px;">
+                        <i class="fas fa-cloud-upload-alt"></i> 1. Subir Foto desde tu Dispositivo (Recomendado)
+                    </label>
+                    
+                    <div class="luxury-file-dropzone" id="fileDropzone" onclick="document.getElementById('newImgFile').click()">
+                        <input type="file" id="newImgFile" accept="image/*" style="display: none;" onchange="handleImageFileSelect(event)">
+                        <div class="dropzone-content">
+                            <div class="dropzone-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="dropzone-text-block">
+                                <div class="dropzone-main-text" id="dropzoneMainText">Haz clic para seleccionar o arrastra una foto</div>
+                                <div class="dropzone-sub-text" id="dropzoneSubText">Admite archivos JPG, PNG, WEBP (Hasta 15 MB)</div>
+                            </div>
+                            <button type="button" class="dropzone-btn" tabindex="-1">
+                                <i class="fas fa-folder-open"></i> Explorar
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Vista Previa de la Imagen Seleccionada -->
-                <div id="newImgPreviewBox" style="display: none; margin-bottom: 18px; text-align: center; background: rgba(2,12,21,0.5); padding: 12px; border-radius: 14px; border: 1px dashed rgba(255,220,51,0.3);">
-                    <img id="newImgPreviewImg" src="" alt="Vista previa" style="max-height: 160px; max-width: 100%; border-radius: 10px; object-fit: cover;">
+                <!-- Vista Previa Elegante de la Imagen Seleccionada -->
+                <div id="newImgPreviewBox" style="display: none; margin-bottom: 20px;">
+                    <div style="background: rgba(2,16,26,0.85); padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,220,51,0.35); display: flex; align-items: center; gap: 16px; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                        <img id="newImgPreviewImg" src="" alt="Vista previa" style="width: 65px; height: 65px; border-radius: 12px; object-fit: cover; border: 1px solid #FFD200; flex-shrink: 0;">
+                        <div style="flex-grow: 1; overflow: hidden;">
+                            <div id="previewFileName" style="color: #ffffff; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">imagen.jpg</div>
+                            <div id="previewFileSize" style="color: #a0aec0; font-size: 0.82rem; margin-top: 2px;">0.0 MB</div>
+                            <div style="color: #48bb78; font-size: 0.8rem; font-weight: 600; margin-top: 4px;"><i class="fas fa-check-circle"></i> Lista para publicar</div>
+                        </div>
+                        <button type="button" onclick="clearSelectedImage(event)" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" title="Quitar imagen">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Opción B: Enlace o Ruta Existente -->
