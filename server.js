@@ -1,19 +1,55 @@
 /**
  * Backend Node.js Server & Hardened CMS Engine — El Faro CVC
  * Provides secure REST API endpoints, separated public inboxes, token authentication,
- * image uploading, atomic write queues, and sensitive file isolation.
+ * image uploading, atomic write queues, sensitive file isolation, and
+ * auto-sync to GitHub for 24/7 persistent data storage.
  */
 
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'cms-data.json');
 const TMP_FILE = path.join(__dirname, 'cms-data.json.tmp');
 const UPLOADS_DIR = path.join(__dirname, 'assets', 'img');
+
+// GitHub Auto-Sync configuration
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
+const GITHUB_REPO  = process.env.GITHUB_REPO  || 'cuybi/el_faro';
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const SITE_URL = process.env.RENDER_EXTERNAL_URL || process.env.SITE_URL || null;
+
+/**
+ * Commits and pushes changes to GitHub so data survives server restarts.
+ * Only runs when GITHUB_TOKEN env var is set on Render.
+ */
+async function syncToGitHub(message = 'chore: cms auto-sync') {
+  if (!GITHUB_TOKEN) {
+    console.log('[GitHub Sync] GITHUB_TOKEN no configurado — omitiendo sync.');
+    return;
+  }
+  try {
+    const repoUrl = `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git`;
+    execSync(`git config user.email "cms-bot@elfarocvc.com"`, { cwd: __dirname, stdio: 'pipe' });
+    execSync(`git config user.name "El Faro CMS Bot"`, { cwd: __dirname, stdio: 'pipe' });
+    execSync(`git add cms-data.json assets/img/`, { cwd: __dirname, stdio: 'pipe' });
+    const diffOutput = execSync(`git diff --cached --name-only`, { cwd: __dirname, stdio: 'pipe' }).toString().trim();
+    if (!diffOutput) {
+      console.log('[GitHub Sync] Sin cambios nuevos que sincronizar.');
+      return;
+    }
+    execSync(`git commit -m "${message}"`, { cwd: __dirname, stdio: 'pipe' });
+    execSync(`git push ${repoUrl} ${GITHUB_BRANCH}`, { cwd: __dirname, stdio: 'pipe' });
+    console.log(`[GitHub Sync] ✅ Cambios sincronizados a GitHub: ${diffOutput.split('\n').join(', ')}`);
+  } catch (err) {
+    // Non-fatal: log but don't crash the server
+    console.error('[GitHub Sync] ⚠️ Error al sincronizar con GitHub:', err.message);
+  }
+}
 
 // Admin credentials (configurable via environment variable)
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@elfarocvc.com').toLowerCase();
@@ -329,6 +365,9 @@ app.post('/api/upload', requireAdminAuth, async (req, res) => {
     await fs.promises.writeFile(targetPath, buffer);
     console.log(`[Upload] Imagen guardada en disco: ${safeName} (${buffer.length} bytes)`);
 
+    // Auto-sync image to GitHub in background (non-blocking)
+    syncToGitHub(`cms: nueva imagen subida ${safeName}`).catch(() => {});
+
     res.json({
       status: 'success',
       url: `assets/img/${safeName}`,
@@ -374,7 +413,11 @@ app.post('/api/cms-data', requireAdminAuth, async (req, res) => {
     });
 
     console.log('[CMS Sync] Datos del CMS actualizados en disco (cms-data.json).');
-    res.json({ status: 'success', message: 'Datos del CMS guardados en disco exitosamente.' });
+
+    // Auto-sync to GitHub in background (non-blocking)
+    syncToGitHub('cms: textos y contenido actualizado desde el panel admin').catch(() => {});
+
+    res.json({ status: 'success', serverSynced: true, message: 'Datos del CMS guardados en disco y sincronizados con GitHub.' });
   } catch (err) {
     console.error('Error saving CMS data:', err);
     res.status(500).json({ error: 'Error interno al escribir datos del CMS.' });
@@ -389,4 +432,20 @@ app.use('/api', (req, res) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`[El Faro CVC] Servidor Seguro y CMS activo en http://localhost:${PORT}`);
+
+  // ── KEEPALIVE: auto-ping every 10 min to prevent Render free tier sleep ──
+  if (SITE_URL) {
+    const KEEPALIVE_MS = 10 * 60 * 1000; // 10 minutes
+    setInterval(async () => {
+      try {
+        const res = await fetch(`${SITE_URL}/api/server-status`);
+        console.log(`[Keepalive] Ping enviado a ${SITE_URL} → ${res.status}`);
+      } catch (err) {
+        console.warn('[Keepalive] Ping fallido:', err.message);
+      }
+    }, KEEPALIVE_MS);
+    console.log(`[Keepalive] Auto-ping activado cada 10 min → ${SITE_URL}`);
+  } else {
+    console.log('[Keepalive] SITE_URL no configurado — configura RENDER_EXTERNAL_URL en Render para activar keepalive.');
+  }
 });
