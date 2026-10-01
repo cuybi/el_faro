@@ -9,7 +9,6 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,37 +16,71 @@ const DATA_FILE = path.join(__dirname, 'cms-data.json');
 const TMP_FILE = path.join(__dirname, 'cms-data.json.tmp');
 const UPLOADS_DIR = path.join(__dirname, 'assets', 'img');
 
-// GitHub Auto-Sync configuration
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
-const GITHUB_REPO  = process.env.GITHUB_REPO  || 'cuybi/el_faro';
+// GitHub persistence via Contents API (no git binary, no deploy triggered)
+const GITHUB_TOKEN  = process.env.GITHUB_TOKEN  || null;
+const GITHUB_REPO   = process.env.GITHUB_REPO   || 'cuybi/el_faro';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE_URL = process.env.RENDER_EXTERNAL_URL || process.env.SITE_URL || null;
 
+const GH_API = `https://api.github.com/repos/${GITHUB_REPO}/contents/cms-data.json`;
+const GH_HEADERS = () => ({
+  'Authorization': `token ${GITHUB_TOKEN}`,
+  'Content-Type': 'application/json',
+  'User-Agent': 'ElFaroCMS/1.0'
+});
+
 /**
- * Commits and pushes changes to GitHub so data survives server restarts.
- * Only runs when GITHUB_TOKEN env var is set on Render.
+ * On startup: read cms-data.json from GitHub and write to disk.
+ * This restores any admin changes made before the last server restart.
  */
-async function syncToGitHub(message = 'chore: cms auto-sync') {
-  if (!GITHUB_TOKEN) {
-    console.log('[GitHub Sync] GITHUB_TOKEN no configurado — omitiendo sync.');
-    return;
-  }
+async function restoreFromGitHub() {
+  if (!GITHUB_TOKEN) return;
   try {
-    const repoUrl = `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git`;
-    execSync(`git config user.email "cms-bot@elfarocvc.com"`, { cwd: __dirname, stdio: 'pipe' });
-    execSync(`git config user.name "El Faro CMS Bot"`, { cwd: __dirname, stdio: 'pipe' });
-    execSync(`git add cms-data.json assets/img/`, { cwd: __dirname, stdio: 'pipe' });
-    const diffOutput = execSync(`git diff --cached --name-only`, { cwd: __dirname, stdio: 'pipe' }).toString().trim();
-    if (!diffOutput) {
-      console.log('[GitHub Sync] Sin cambios nuevos que sincronizar.');
-      return;
+    const res = await fetch(`${GH_API}?ref=${GITHUB_BRANCH}`, { headers: GH_HEADERS() });
+    if (!res.ok) { console.warn('[GitHub Restore] No se pudo leer cms-data.json de GitHub:', res.status); return; }
+    const json = await res.json();
+    const content = Buffer.from(json.content, 'base64').toString('utf8');
+    const githubData = JSON.parse(content);
+    // Only restore if GitHub data is newer than local
+    const localData = fs.existsSync(DATA_FILE) ? JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')) : {};
+    const ghTime = new Date(githubData._lastServerUpdate || 0).getTime();
+    const localTime = new Date(localData._lastServerUpdate || 0).getTime();
+    if (ghTime > localTime) {
+      fs.writeFileSync(DATA_FILE, content, 'utf8');
+      console.log('[GitHub Restore] ✅ cms-data.json restaurado desde GitHub.');
+    } else {
+      console.log('[GitHub Restore] Local ya está actualizado.');
     }
-    execSync(`git commit -m "${message}"`, { cwd: __dirname, stdio: 'pipe' });
-    execSync(`git push ${repoUrl} ${GITHUB_BRANCH}`, { cwd: __dirname, stdio: 'pipe' });
-    console.log(`[GitHub Sync] ✅ Cambios sincronizados a GitHub: ${diffOutput.split('\n').join(', ')}`);
   } catch (err) {
-    // Non-fatal: log but don't crash the server
-    console.error('[GitHub Sync] ⚠️ Error al sincronizar con GitHub:', err.message);
+    console.error('[GitHub Restore] Error:', err.message);
+  }
+}
+
+/**
+ * After each save: write cms-data.json to GitHub via Contents API.
+ * Non-blocking. Does NOT trigger a new Render deploy.
+ */
+async function syncToGitHub(dataStr) {
+  if (!GITHUB_TOKEN) return;
+  try {
+    // Get current SHA (required by GitHub API to update a file)
+    const getRes = await fetch(`${GH_API}?ref=${GITHUB_BRANCH}`, { headers: GH_HEADERS() });
+    const getSha = getRes.ok ? (await getRes.json()).sha : undefined;
+    const body = {
+      message: 'cms: auto-sync desde panel admin',
+      content: Buffer.from(dataStr).toString('base64'),
+      branch: GITHUB_BRANCH,
+      ...(getSha ? { sha: getSha } : {})
+    };
+    const putRes = await fetch(GH_API, { method: 'PUT', headers: GH_HEADERS(), body: JSON.stringify(body) });
+    if (putRes.ok) {
+      console.log('[GitHub Sync] ✅ cms-data.json guardado en GitHub.');
+    } else {
+      const errText = await putRes.text();
+      console.error('[GitHub Sync] ⚠️ Error:', putRes.status, errText.slice(0, 200));
+    }
+  } catch (err) {
+    console.error('[GitHub Sync] ⚠️ Error:', err.message);
   }
 }
 
@@ -414,10 +447,11 @@ app.post('/api/cms-data', requireAdminAuth, async (req, res) => {
 
     console.log('[CMS Sync] Datos del CMS actualizados en disco (cms-data.json).');
 
-    // Auto-sync to GitHub in background (non-blocking)
-    syncToGitHub('cms: textos y contenido actualizado desde el panel admin').catch(() => {});
+    // Auto-sync to GitHub via Contents API (non-blocking, no deploy triggered)
+    const savedStr = JSON.stringify(updated, null, 2);
+    syncToGitHub(savedStr).catch(() => {});
 
-    res.json({ status: 'success', serverSynced: true, message: 'Datos del CMS guardados en disco y sincronizados con GitHub.' });
+    res.json({ status: 'success', serverSynced: true, message: 'Datos guardados en disco y sincronizados con GitHub.' });
   } catch (err) {
     console.error('Error saving CMS data:', err);
     res.status(500).json({ error: 'Error interno al escribir datos del CMS.' });
@@ -430,22 +464,23 @@ app.use('/api', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`[El Faro CVC] Servidor Seguro y CMS activo en http://localhost:${PORT}`);
+app.listen(PORT, async () => {
+  console.log(`[El Faro CVC] Servidor activo en http://localhost:${PORT}`);
+
+  // Restore latest CMS data from GitHub on every startup
+  await restoreFromGitHub();
 
   // ── KEEPALIVE: auto-ping every 10 min to prevent Render free tier sleep ──
   if (SITE_URL) {
-    const KEEPALIVE_MS = 10 * 60 * 1000; // 10 minutes
+    const KEEPALIVE_MS = 10 * 60 * 1000;
     setInterval(async () => {
       try {
-        const res = await fetch(`${SITE_URL}/api/server-status`);
-        console.log(`[Keepalive] Ping enviado a ${SITE_URL} → ${res.status}`);
+        const r = await fetch(`${SITE_URL}/api/server-status`);
+        console.log(`[Keepalive] Ping → ${r.status}`);
       } catch (err) {
         console.warn('[Keepalive] Ping fallido:', err.message);
       }
     }, KEEPALIVE_MS);
-    console.log(`[Keepalive] Auto-ping activado cada 10 min → ${SITE_URL}`);
-  } else {
-    console.log('[Keepalive] SITE_URL no configurado — configura RENDER_EXTERNAL_URL en Render para activar keepalive.');
+    console.log(`[Keepalive] Auto-ping activo cada 10 min → ${SITE_URL}`);
   }
 });
