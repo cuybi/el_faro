@@ -49,6 +49,7 @@ async function runTests() {
 
   // 3. Admin Login
   let token = null;
+  let originalDataBackup = null;
   try {
     const loginRes = await fetch(`${BASE_URL}/api/admin/login`, {
       method: 'POST',
@@ -118,8 +119,9 @@ async function runTests() {
   // 6. Test CMS Data Modification & Physical Disk Persistence
   const testMarker = 'TestPersistence_' + Date.now();
   try {
-    // Read current raw data directly from disk
-    const currentData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    // Read current raw data directly from disk and keep clean backup
+    originalDataBackup = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const currentData = JSON.parse(JSON.stringify(originalDataBackup));
 
     // Inject test modifications
     currentData.siteTexts = currentData.siteTexts || {};
@@ -170,12 +172,29 @@ async function runTests() {
     assert(false, `Fallo en prueba de guardado en disco: ${err.message}`);
   }
 
-  // 7. Cleanup test artifacts (optional, keep data file intact)
+  // 7. Cleanup test artifacts and restore original CMS state
   if (localUploadedFile && fs.existsSync(localUploadedFile)) {
     try {
       fs.unlinkSync(localUploadedFile);
       console.log(`[Cleanup] Imagen temporal de prueba eliminada: ${localUploadedFile}`);
     } catch (_) {}
+  }
+
+  // Restore original data snapshot so cms-data.json remains clean
+  try {
+    const restoreRes = await fetch(`${BASE_URL}/api/cms-data`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(originalDataBackup)
+    });
+    if (restoreRes.status === 200) {
+      console.log('[Cleanup] cms-data.json restaurado a su estado original limpio.');
+    }
+  } catch (err) {
+    console.warn(`[Cleanup Warning] No se pudo restaurar estado original via API: ${err.message}`);
   }
 
   console.log(`\n=== Resumen de Pruebas: ${passed} Pasadas, ${failed} Fallidas ===`);

@@ -313,7 +313,7 @@
   }
 
   // Save Edits to LocalStorage and CMSData
-  function saveVisualEdits() {
+  async function saveVisualEdits() {
     let data = window.CMSData || {};
 
     // 1. Synchronize known siteTexts if present on this page
@@ -368,23 +368,34 @@
       data.pageMainContent[pageKey] = clone.innerHTML;
     }
 
+    const status = document.getElementById('cms-save-status');
+    if (status) {
+      status.style.color = '#FFD200';
+      status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando cambios en el servidor...';
+    }
+
     // Persist via saveCMSData engine
+    let syncResult = null;
     if (window.saveCMSData) {
-      window.saveCMSData(data);
+      syncResult = await window.saveCMSData(data);
     } else {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       window.CMSData = data;
     }
     hasUnsavedChanges = false;
 
-    const status = document.getElementById('cms-save-status');
     if (status) {
-      status.style.color = '#48bb78';
-      status.innerHTML = '✅ ¡Todas las fotos y textos guardados con éxito en el CMS!';
+      if (syncResult && syncResult.serverSynced) {
+        status.style.color = '#48bb78';
+        status.innerHTML = '✅ ¡Cambios guardados en disco permanentemente!';
+      } else {
+        status.style.color = '#ecc94b';
+        status.innerHTML = '⚠️ Guardado en caché local (servidor no sincronizado).';
+      }
       setTimeout(() => {
         status.style.color = '#a0aec0';
         status.innerHTML = 'Haz clic sobre cualquier texto o imagen para cambiarla en vivo.';
-      }, 3000);
+      }, 4000);
     }
   }
 
