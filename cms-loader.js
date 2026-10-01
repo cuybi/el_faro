@@ -7,7 +7,11 @@
   'use strict';
 
   const STORAGE_KEY = 'elfaro_cms_data';
-  const API_ENDPOINT = '/api/cms-data';
+  // ponytail: universal endpoint resolver for PHP (SiteGround) and Node.js
+  window.getApiUrl = function(route) {
+    return '/api/index.php?route=' + route;
+  };
+  const API_ENDPOINT = window.getApiUrl('cms-data');
 
   window.CMSData = null;
 
@@ -375,7 +379,7 @@
           };
 
           // Send isolated submission to backend inbox
-          fetch('/api/inbox/prayer', {
+          fetch(window.getApiUrl('inbox/prayer'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -420,7 +424,7 @@
           };
 
           // Send isolated submission to backend inbox
-          fetch('/api/inbox/contribution', {
+          fetch(window.getApiUrl('inbox/contribution'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

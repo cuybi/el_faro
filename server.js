@@ -129,6 +129,14 @@ function verifyToken(token) {
   }
 }
 
+// ponytail: universal route mapping so frontend uses /api/index.php?route=... identically in PHP and Node
+app.use((req, res, next) => {
+  if (req.query && req.query.route) {
+    req.url = '/api/' + req.query.route;
+  }
+  next();
+});
+
 // Middleware: JSON parser with 25MB limit to allow image uploads
 app.use(express.json({ limit: '25mb' }));
 

@@ -211,6 +211,7 @@ if (!empty($_GET['route'])) {
         $route = $uri;
     }
 }
+$route = preg_replace('#^index\.php/?#', '', $route);
 $route = trim($route, '/');
 $method = $_SERVER['REQUEST_METHOD'];
 

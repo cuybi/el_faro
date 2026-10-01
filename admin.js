@@ -8,6 +8,8 @@
 
   const AUTH_KEY = 'elfaro_admin_logged';
   const PASS_KEY = 'elfaro_admin_password';
+  // ponytail: universal endpoint resolver for PHP (SiteGround) and Node.js
+  const apiRoute = (r) => (window.getApiUrl ? window.getApiUrl(r) : '/api/index.php?route=' + r);
 
   // HTML Entity escaper to prevent Stored XSS
   function escapeHtml(str) {
@@ -43,7 +45,7 @@
     if (!badge || !text) return false;
 
     try {
-      const res = await fetch('/api/server-status', { cache: 'no-store' });
+      const res = await fetch(apiRoute('server-status'), { cache: 'no-store' });
       if (res.ok) {
         badge.style.background = 'rgba(39, 201, 63, 0.15)';
         badge.style.borderColor = 'rgba(39, 201, 63, 0.4)';
@@ -77,7 +79,7 @@
     // If a token is stored, verify its signature with the server
     if (token) {
       try {
-        const verifyRes = await fetch('/api/admin/verify-token', {
+        const verifyRes = await fetch(apiRoute('admin/verify-token'), {
           headers: { 'Authorization': 'Bearer ' + token },
           cache: 'no-store'
         });
@@ -126,7 +128,7 @@
 
     // 1. Try secure backend authentication
     try {
-      const resp = await fetch('/api/admin/login', {
+      const resp = await fetch(apiRoute('admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass })
@@ -413,7 +415,7 @@
       // 1. Si seleccionó un archivo local, subirlo a assets/img/ en el servidor
       if (pendingImageUpload) {
         const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
-        const uploadResp = await fetch('/api/upload', {
+        const uploadResp = await fetch(apiRoute('upload'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -177,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 // Send isolated appointment to backend inbox
-                fetch('/api/inbox/appointment', {
+                const appInboxUrl = window.getApiUrl ? window.getApiUrl('inbox/appointment') : '/api/index.php?route=inbox/appointment';
+                fetch(appInboxUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
