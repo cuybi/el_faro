@@ -15,12 +15,16 @@
   // Initialize CMS Data
   async function initCMS() {
     try {
-      const response = await fetch('cms-data.json');
-      if (response.ok) {
+      // First try dynamic API with cache: 'no-store' to guarantee fresh data from PHP / server
+      let response = await fetch(API_ENDPOINT, { cache: 'no-store' }).catch(() => null);
+      if (!response || !response.ok) {
+        response = await fetch('cms-data.json?v=' + Date.now(), { cache: 'no-store' }).catch(() => null);
+      }
+      if (response && response.ok) {
         const fetchedData = await response.json();
         
         // Smart merge with localStorage to preserve offline submissions (prayers, contributions)
-        // and admin edits that occurred while offline or without server.js running
+        // and admin edits that occurred while offline or without server running
         const cached = localStorage.getItem(STORAGE_KEY);
         if (cached) {
           try {
@@ -61,7 +65,7 @@
         }
         
         window.CMSData = fetchedData;
-        saveCMSToLocal(fetchedData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fetchedData));
       }
     } catch (e) {
       console.log('Network unavailable or fetch failed, trying local CMS cache.');
@@ -127,7 +131,7 @@
           { id: "ct-1", name: "Juan Pérez", email: "juan.perez@ejemplo.com", phone: "+591 70011223", type: "Diezmo", ref: "TRX-884920", message: "Muchas bendiciones para toda la congregación.", date: "2026-02-13T08:15:00.000Z" }
         ]
       };
-      saveCMSToLocal(window.CMSData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(window.CMSData));
     }
 
     if (window.CMSData) {

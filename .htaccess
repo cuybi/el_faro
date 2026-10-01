@@ -1,12 +1,20 @@
 # ==============================================================================
-# EL FARO CVC - SITEGROUND OPTIMIZED .HTACCESS
+# EL FARO CVC - SITEGROUND OPTIMIZED .HTACCESS (PHP 24/7 CMS ENGINE)
 # ==============================================================================
 
 # Enable Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    
-    # Force HTTPS Redirect
+
+    # 1. Pass Bearer Authorization header to PHP in SiteGround / Apache
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+    # 2. Route /api/* requests to api/index.php
+    RewriteRule ^api/(.*)$ api/index.php?route=$1 [QSA,L]
+    RewriteRule ^api/?$ api/index.php [QSA,L]
+
+    # 3. Force HTTPS Redirect
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
@@ -14,12 +22,27 @@
 # Force UTF-8 Encoding
 AddDefaultCharset UTF-8
 
+# Protect Sensitive System Files
+<FilesMatch "^(\.server_secret|\.git|\.env|server\.js|package\.json|package-lock\.json|render\.yaml|Procfile)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Never cache dynamic JSON data
+<FilesMatch "\.(json)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </IfModule>
+</FilesMatch>
+
 # GZIP Compression
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>
 
-# Browser Caching & Expiration Headers
+# Browser Caching & Expiration Headers for static assets
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault "access plus 1 month"
