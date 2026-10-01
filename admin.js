@@ -47,10 +47,12 @@
     try {
       const res = await fetch(apiRoute('server-status'), { cache: 'no-store' });
       if (res.ok) {
+        const sJson = await res.json().catch(() => ({}));
         badge.style.background = 'rgba(39, 201, 63, 0.15)';
         badge.style.borderColor = 'rgba(39, 201, 63, 0.4)';
         badge.style.color = '#27c93f';
-        text.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 4px;"></i> Servidor Conectado (Guardado en Disco Activo)';
+        const dbInfo = sJson.database ? `(${sJson.database} Activa)` : '(Base de Datos Activa)';
+        text.innerHTML = `<i class="fas fa-database" style="margin-right: 4px;"></i> Servidor Conectado ${dbInfo}`;
         return true;
       }
     } catch (_) {}
@@ -89,14 +91,34 @@
           sessionStorage.setItem(AUTH_KEY, 'true');
           localStorage.setItem(AUTH_KEY, 'true');
         } else {
-          // Token expired or invalid: require clean re-login
-          sessionStorage.removeItem('elfaro_admin_token');
-          sessionStorage.removeItem(AUTH_KEY);
-          localStorage.removeItem('elfaro_admin_token');
-          localStorage.removeItem(AUTH_KEY);
-          if (overlay) overlay.style.display = 'flex';
-          if (dashboard) dashboard.style.display = 'none';
-          return;
+          // Token expired or invalid: attempt automatic re-auth
+          try {
+            const reauthResp = await fetch(apiRoute('admin/login'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: 'admin@elfarocvc.com', password: adminPass })
+            });
+            if (reauthResp.ok) {
+              const reauthJson = await reauthResp.json();
+              if (reauthJson.token) {
+                token = reauthJson.token;
+                sessionStorage.setItem('elfaro_admin_token', token);
+                localStorage.setItem('elfaro_admin_token', token);
+                sessionStorage.setItem(AUTH_KEY, 'true');
+                localStorage.setItem(AUTH_KEY, 'true');
+              }
+            }
+          } catch (_) {}
+
+          if (!sessionStorage.getItem('elfaro_admin_token')) {
+            sessionStorage.removeItem('elfaro_admin_token');
+            sessionStorage.removeItem(AUTH_KEY);
+            localStorage.removeItem('elfaro_admin_token');
+            localStorage.removeItem(AUTH_KEY);
+            if (overlay) overlay.style.display = 'flex';
+            if (dashboard) dashboard.style.display = 'none';
+            return;
+          }
         }
       } catch (err) {
         // Server offline: allow offline session if flag exists

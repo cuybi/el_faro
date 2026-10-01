@@ -254,16 +254,15 @@
       document.head.appendChild(style);
     }
 
-    // Target editable elements: headings, text, paragraphs, buttons, list items
+    // Target editable text elements only — NEVER hijack buttons, navigation, or interactive controls
     const selectors = [
-      'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'span.subtitle-gold', 'span.eyebrow-badge',
-      'a.btn-solid-primary', 'a.btn-outline-gold', 'a.link-gold', 'li', 'button'
+      'h1', 'h2', 'h3', 'h4', 'h5', 'p', '.section-text', '.elegant-title', '.elegant-subtitle', 'span.subtitle-gold', 'span.eyebrow-badge'
     ];
 
     selectors.forEach(sel => {
       document.querySelectorAll(sel).forEach(el => {
-        // Skip header links and toolbar elements
-        if (el.closest('#cms-live-toolbar') || el.closest('#header') || el.closest('#adminLayout')) return;
+        // Skip buttons, forms, nav links and toolbar elements
+        if (el.closest('#cms-live-toolbar') || el.closest('#header') || el.closest('#adminLayout') || el.closest('button') || el.closest('a') || el.closest('form')) return;
 
         el.setAttribute('contenteditable', 'true');
         el.addEventListener('input', markUnsaved);
@@ -355,18 +354,6 @@
 
     const nitEl = document.querySelector('.cms-bank-nit');
     if (nitEl) data.bankInfo.nit = nitEl.innerText.trim();
-
-    let pageKey = window.location.pathname.split('/').pop() || 'inicio.html';
-    if (!pageKey || pageKey === '/') pageKey = 'inicio.html';
-    data.pageMainContent = data.pageMainContent || {};
-    const mainEl = document.querySelector('main');
-    if (mainEl) {
-      const clone = mainEl.cloneNode(true);
-      clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-      clone.querySelectorAll('.cms-img-edit-btn').forEach(el => el.remove());
-      clone.querySelectorAll('.cms-image-wrapper-editable').forEach(el => el.classList.remove('cms-image-wrapper-editable'));
-      data.pageMainContent[pageKey] = clone.innerHTML;
-    }
 
     const status = document.getElementById('cms-save-status');
     if (status) {

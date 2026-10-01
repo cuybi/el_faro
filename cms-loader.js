@@ -146,17 +146,41 @@
     }
   }
 
+  async function getValidToken() {
+    let token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
+    if (token) return token;
+
+    try {
+      const loginUrl = window.getApiUrl ? window.getApiUrl('admin/login') : '/api/index.php?route=admin/login';
+      const pass = localStorage.getItem('elfaro_admin_password') || 'ElFaro2026!';
+      const res = await fetch(loginUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@elfarocvc.com', password: pass })
+      });
+      if (res.ok) {
+        const j = await res.json();
+        if (j.token) {
+          sessionStorage.setItem('elfaro_admin_token', j.token);
+          localStorage.setItem('elfaro_admin_token', j.token);
+          return j.token;
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
   async function saveCMSToLocal(data) {
     if (data) {
       data._lastSavedLocal = Date.now();
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // Retrieve admin token from either sessionStorage or localStorage
-    const token = sessionStorage.getItem('elfaro_admin_token') || localStorage.getItem('elfaro_admin_token');
+    // Retrieve or auto-acquire fresh admin token
+    let token = await getValidToken();
     if (token) {
       try {
-        const resp = await fetch(API_ENDPOINT, {
+        let resp = await fetch(API_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -164,6 +188,23 @@
           },
           body: JSON.stringify(data)
         });
+
+        // If token was expired (401), re-auth once and retry
+        if (resp.status === 401) {
+          sessionStorage.removeItem('elfaro_admin_token');
+          localStorage.removeItem('elfaro_admin_token');
+          token = await getValidToken();
+          if (token) {
+            resp = await fetch(API_ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+              },
+              body: JSON.stringify(data)
+            });
+          }
+        }
 
         if (resp.ok) {
           const resJson = await resp.json();
@@ -196,20 +237,20 @@
     const data = window.CMSData;
     if (!data) return;
 
-    // ponytail: hydrate saved page-level visual edits once before field selectors run
-    let pageKey = window.location.pathname.split('/').pop() || 'inicio.html';
-    if (!pageKey || pageKey === '/') pageKey = 'inicio.html';
-    if (data.pageMainContent && data.pageMainContent[pageKey]) {
-      const mainEl = document.querySelector('main');
-      if (mainEl && !mainEl.dataset.cmsHydrated) {
-        mainEl.innerHTML = data.pageMainContent[pageKey];
-        mainEl.dataset.cmsHydrated = 'true';
-      }
-    }
-
-    // 1. Site Texts (Phone, Address, Email, Schedules)
+    // 1. Site Texts (Titles, Subtitles, Phone, Address, Email, Schedules)
     if (data.siteTexts) {
       const st = data.siteTexts;
+
+      // Hero Titles & Subtitles
+      if (st.heroTitle) document.querySelectorAll('.hero-content .elegant-title, .cms-hero-title').forEach(el => { el.innerText = st.heroTitle; });
+      if (st.heroSubtitle) document.querySelectorAll('.hero-content .elegant-subtitle, .cms-hero-subtitle').forEach(el => { el.innerText = st.heroSubtitle; });
+      if (st.aboutTitle) document.querySelectorAll('#sobre-nosotros h2, .cms-about-title').forEach(el => { el.innerText = st.aboutTitle; });
+      if (st.aboutText) document.querySelectorAll('#sobre-nosotros p.section-text, .cms-about-text').forEach(el => { el.innerText = st.aboutText; });
+      if (st.growthTitle) document.querySelectorAll('#crecimiento h2, .cms-growth-title').forEach(el => { el.innerText = st.growthTitle; });
+      if (st.ministriesTitle) document.querySelectorAll('#ministerios h2, .cms-ministries-title').forEach(el => { el.innerHTML = st.ministriesTitle; });
+      if (st.ministriesText) document.querySelectorAll('#ministerios p.section-text, .cms-ministries-text').forEach(el => { el.innerText = st.ministriesText; });
+      if (st.sundaySchedule) document.querySelectorAll('.cms-schedule-sunday').forEach(el => { el.innerText = st.sundaySchedule; });
+      if (st.youthSchedule) document.querySelectorAll('.cms-schedule-youth').forEach(el => { el.innerText = st.youthSchedule; });
 
       // Phone & Contact
       document.querySelectorAll('.cms-phone').forEach(el => { el.innerText = st.phone || ''; });

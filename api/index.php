@@ -1,21 +1,21 @@
 <?php
 /**
- * Backend PHP & CMS Engine — El Faro CVC
- * SiteGround 24/7 Persistent Storage
+ * Backend PHP & SQL Database CMS Engine — El Faro CVC
+ * SiteGround 24/7 Persistent Storage with Real SQL Database (PDO SQLite / MySQL)
  * 
  * Provides secure REST API endpoints for:
- * - Server Health / Status
+ * - Server Health / Status & Database Diagnostics
  * - Admin Authentication & Token Verification (HMAC SHA-256)
- * - Atomic CMS Data Persistence (cms-data.json on SSD)
+ * - Relational SQL Database Storage & Transactions
  * - Secure Image Uploading (assets/img/)
  * - Public Inboxes (Prayers, Appointments, Contributions)
  */
 
-// Error reporting for production (logs errors, suppresses output)
+// Error reporting for production
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set('display_errors', '0');
 
-// Required Security & Cache Headers
+// Strict Security & Anti-Cache Headers (forces fresh data from database every request)
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Configuration
 define('ROOT_DIR', dirname(__DIR__));
 define('DATA_FILE', ROOT_DIR . '/cms-data.json');
+define('DB_FILE', __DIR__ . '/elfaro_cms.db');
 define('UPLOADS_DIR', ROOT_DIR . '/assets/img');
 define('SECRET_FILE', ROOT_DIR . '/.server_secret');
 
@@ -142,51 +143,346 @@ function sanitizeText($str, $maxLength = 2000) {
 }
 
 // ==========================================
-// DATA PERSISTENCE (ATOMIC FILE LOCK)
+// DATABASE ENGINE (PDO SQLITE / MYSQL)
 // ==========================================
 
-function readCmsData() {
-    if (!file_exists(DATA_FILE)) {
-        return [];
+function getDb() {
+    static $pdo = null;
+    if ($pdo !== null) return $pdo;
+
+    $dbHost = getenv('DB_HOST');
+    $dbName = getenv('DB_NAME');
+    $dbUser = getenv('DB_USER');
+    $dbPass = getenv('DB_PASS');
+
+    if (!empty($dbHost) && !empty($dbName)) {
+        // Connect to remote or cPanel MySQL
+        $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";
+        $pdo = new PDO($dsn, $dbUser, $dbPass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+    } else {
+        // High-performance embedded SQLite database on SiteGround SSD
+        $pdo = new PDO("sqlite:" . DB_FILE, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+        $pdo->exec('PRAGMA journal_mode = WAL;');
+        $pdo->exec('PRAGMA synchronous = NORMAL;');
     }
-    $raw = @file_get_contents(DATA_FILE);
-    if ($raw === false) return [];
-    $data = json_decode($raw, true);
-    return is_array($data) ? $data : [];
+
+    initDatabaseSchema($pdo);
+    return $pdo;
 }
 
+function initDatabaseSchema($pdo) {
+    // 1. Settings / Config Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS cms_settings (
+        setting_key VARCHAR(100) PRIMARY KEY,
+        setting_value TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // 2. Gallery Images Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS gallery_images (
+        id VARCHAR(100) PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        image_url VARCHAR(500) NOT NULL,
+        date_val VARCHAR(50),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // 3. Prayers Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS prayers (
+        id VARCHAR(100) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        email VARCHAR(255),
+        request TEXT NOT NULL,
+        date_iso VARCHAR(50),
+        status VARCHAR(50) DEFAULT 'Pendiente',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // 4. Appointments Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS appointments (
+        id VARCHAR(100) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255),
+        phone VARCHAR(50),
+        date_val VARCHAR(50),
+        time_val VARCHAR(50),
+        status VARCHAR(50) DEFAULT 'Pendiente',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // 5. Contributions Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS contributions (
+        id VARCHAR(100) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        email VARCHAR(255),
+        type VARCHAR(100),
+        ref VARCHAR(100),
+        message TEXT,
+        date_iso VARCHAR(50),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // Auto-seed existing JSON data on first run
+    try {
+        $check = $pdo->query("SELECT COUNT(*) as count FROM cms_settings")->fetch();
+        if (empty($check['count'])) {
+            seedFromExistingJson($pdo);
+        }
+    } catch (Exception $e) {
+        // Table might be initializing
+    }
+}
+
+function seedFromExistingJson($pdo) {
+    if (!file_exists(DATA_FILE)) return;
+    $raw = @file_get_contents(DATA_FILE);
+    if (!$raw) return;
+    $data = json_decode($raw, true);
+    if (!is_array($data)) return;
+
+    // Seed settings
+    if (isset($data['siteTexts'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('siteTexts', :v)");
+        $stmt->execute([':v' => json_encode($data['siteTexts'], JSON_UNESCAPED_UNICODE)]);
+    }
+    if (isset($data['bankInfo'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('bankInfo', :v)");
+        $stmt->execute([':v' => json_encode($data['bankInfo'], JSON_UNESCAPED_UNICODE)]);
+    }
+    if (isset($data['videos'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value) VALUES ('videos', :v)");
+        $stmt->execute([':v' => json_encode($data['videos'], JSON_UNESCAPED_UNICODE)]);
+    }
+
+    // Seed gallery
+    if (!empty($data['galleryImages']) && is_array($data['galleryImages'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO gallery_images (id, title, category, image_url, date_val) VALUES (:id, :title, :category, :img, :d)");
+        foreach ($data['galleryImages'] as $img) {
+            $stmt->execute([
+                ':id' => $img['id'] ?? ('img-' . uniqid()),
+                ':title' => $img['title'] ?? '',
+                ':category' => $img['category'] ?? 'adoracion',
+                ':img' => $img['imageUrl'] ?? ($img['image_url'] ?? ''),
+                ':d' => $img['date'] ?? gmdate('Y-m-d')
+            ]);
+        }
+    }
+
+    // Seed prayers
+    if (!empty($data['prayers']) && is_array($data['prayers'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO prayers (id, name, phone, email, request, date_iso, status) VALUES (:id, :name, :phone, :email, :req, :d, :status)");
+        foreach ($data['prayers'] as $pr) {
+            $stmt->execute([
+                ':id' => $pr['id'] ?? ('pr-' . uniqid()),
+                ':name' => $pr['name'] ?? '',
+                ':phone' => $pr['phone'] ?? '',
+                ':email' => $pr['email'] ?? '',
+                ':req' => $pr['request'] ?? '',
+                ':d' => $pr['date'] ?? gmdate('c'),
+                ':status' => $pr['status'] ?? 'Pendiente'
+            ]);
+        }
+    }
+
+    // Seed appointments
+    if (!empty($data['appointments']) && is_array($data['appointments'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO appointments (id, name, email, phone, date_val, time_val, status) VALUES (:id, :name, :email, :phone, :d, :t, :status)");
+        foreach ($data['appointments'] as $ap) {
+            $stmt->execute([
+                ':id' => $ap['id'] ?? ('app-' . uniqid()),
+                ':name' => $ap['name'] ?? '',
+                ':email' => $ap['email'] ?? '',
+                ':phone' => $ap['phone'] ?? '',
+                ':d' => $ap['date'] ?? '',
+                ':t' => $ap['time'] ?? '',
+                ':status' => $ap['status'] ?? 'Pendiente'
+            ]);
+        }
+    }
+
+    // Seed contributions
+    if (!empty($data['contributions']) && is_array($data['contributions'])) {
+        $stmt = $pdo->prepare("INSERT OR REPLACE INTO contributions (id, name, phone, email, type, ref, message, date_iso) VALUES (:id, :name, :phone, :email, :type, :ref, :msg, :d)");
+        foreach ($data['contributions'] as $ct) {
+            $stmt->execute([
+                ':id' => $ct['id'] ?? ('ct-' . uniqid()),
+                ':name' => $ct['name'] ?? '',
+                ':phone' => $ct['phone'] ?? '',
+                ':email' => $ct['email'] ?? '',
+                ':type' => $ct['type'] ?? 'General',
+                ':ref' => $ct['ref'] ?? '',
+                ':msg' => $ct['message'] ?? '',
+                ':d' => $ct['date'] ?? gmdate('c')
+            ]);
+        }
+    }
+}
+
+// Read full CMS Data from SQL Database
+function readCmsData() {
+    try {
+        $db = getDb();
+        $result = [];
+
+        // 1. Settings (siteTexts, bankInfo, videos, etc.)
+        $stmt = $db->query("SELECT setting_key, setting_value FROM cms_settings");
+        while ($row = $stmt->fetch()) {
+            $val = json_decode($row['setting_value'], true);
+            $result[$row['setting_key']] = ($val !== null) ? $val : $row['setting_value'];
+        }
+
+        // 2. Gallery Images
+        $galleryStmt = $db->query("SELECT id, title, category, image_url as imageUrl, date_val as date FROM gallery_images ORDER BY created_at DESC");
+        $result['galleryImages'] = $galleryStmt->fetchAll();
+
+        // 3. Prayers
+        $prayerStmt = $db->query("SELECT id, name, phone, email, request, date_iso as date, status FROM prayers ORDER BY created_at DESC");
+        $result['prayers'] = $prayerStmt->fetchAll();
+
+        // 4. Appointments
+        $appStmt = $db->query("SELECT id, name, email, phone, date_val as date, time_val as time, status FROM appointments ORDER BY created_at DESC");
+        $result['appointments'] = $appStmt->fetchAll();
+
+        // 5. Contributions
+        $ctStmt = $db->query("SELECT id, name, phone, email, type, ref, message, date_iso as date FROM contributions ORDER BY created_at DESC");
+        $result['contributions'] = $ctStmt->fetchAll();
+
+        $result['_lastServerUpdate'] = $result['_lastServerUpdate'] ?? gmdate('c');
+
+        return $result;
+    } catch (Exception $e) {
+        error_log('Database read error: ' . $e->getMessage());
+        return readJsonFallback();
+    }
+}
+
+function readJsonFallback() {
+    if (!file_exists(DATA_FILE)) return [];
+    $raw = @file_get_contents(DATA_FILE);
+    $d = json_decode($raw, true);
+    return is_array($d) ? $d : [];
+}
+
+// Save CMS Data to SQL Database with Transaction
 function saveCmsData($newData) {
-    if (!is_array($newData)) {
+    if (!is_array($newData)) return false;
+
+    try {
+        $db = getDb();
+        $db->beginTransaction();
+
+        // Update siteTexts
+        if (isset($newData['siteTexts'])) {
+            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('siteTexts', :v, CURRENT_TIMESTAMP)");
+            $stmt->execute([':v' => json_encode($newData['siteTexts'], JSON_UNESCAPED_UNICODE)]);
+        }
+
+        // Update bankInfo
+        if (isset($newData['bankInfo'])) {
+            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('bankInfo', :v, CURRENT_TIMESTAMP)");
+            $stmt->execute([':v' => json_encode($newData['bankInfo'], JSON_UNESCAPED_UNICODE)]);
+        }
+
+        // Update videos
+        if (isset($newData['videos'])) {
+            $stmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('videos', :v, CURRENT_TIMESTAMP)");
+            $stmt->execute([':v' => json_encode($newData['videos'], JSON_UNESCAPED_UNICODE)]);
+        }
+
+        // Update galleryImages
+        if (isset($newData['galleryImages']) && is_array($newData['galleryImages'])) {
+            $db->exec("DELETE FROM gallery_images");
+            $imgStmt = $db->prepare("INSERT INTO gallery_images (id, title, category, image_url, date_val) VALUES (:id, :title, :category, :img, :d)");
+            foreach ($newData['galleryImages'] as $img) {
+                $imgStmt->execute([
+                    ':id' => $img['id'] ?? ('img-' . uniqid()),
+                    ':title' => $img['title'] ?? '',
+                    ':category' => $img['category'] ?? 'adoracion',
+                    ':img' => $img['imageUrl'] ?? ($img['image_url'] ?? ''),
+                    ':d' => $img['date'] ?? gmdate('Y-m-d')
+                ]);
+            }
+        }
+
+        // Update prayers if provided
+        if (isset($newData['prayers']) && is_array($newData['prayers'])) {
+            $db->exec("DELETE FROM prayers");
+            $prStmt = $db->prepare("INSERT INTO prayers (id, name, phone, email, request, date_iso, status) VALUES (:id, :name, :phone, :email, :req, :d, :status)");
+            foreach ($newData['prayers'] as $pr) {
+                $prStmt->execute([
+                    ':id' => $pr['id'] ?? ('pr-' . uniqid()),
+                    ':name' => $pr['name'] ?? '',
+                    ':phone' => $pr['phone'] ?? '',
+                    ':email' => $pr['email'] ?? '',
+                    ':req' => $pr['request'] ?? '',
+                    ':d' => $pr['date'] ?? gmdate('c'),
+                    ':status' => $pr['status'] ?? 'Pendiente'
+                ]);
+            }
+        }
+
+        // Update appointments if provided
+        if (isset($newData['appointments']) && is_array($newData['appointments'])) {
+            $db->exec("DELETE FROM appointments");
+            $apStmt = $db->prepare("INSERT INTO appointments (id, name, email, phone, date_val, time_val, status) VALUES (:id, :name, :email, :phone, :d, :t, :status)");
+            foreach ($newData['appointments'] as $ap) {
+                $apStmt->execute([
+                    ':id' => $ap['id'] ?? ('app-' . uniqid()),
+                    ':name' => $ap['name'] ?? '',
+                    ':email' => $ap['email'] ?? '',
+                    ':phone' => $ap['phone'] ?? '',
+                    ':d' => $ap['date'] ?? '',
+                    ':t' => $ap['time'] ?? '',
+                    ':status' => $ap['status'] ?? 'Pendiente'
+                ]);
+            }
+        }
+
+        // Update contributions if provided
+        if (isset($newData['contributions']) && is_array($newData['contributions'])) {
+            $db->exec("DELETE FROM contributions");
+            $ctStmt = $db->prepare("INSERT INTO contributions (id, name, phone, email, type, ref, message, date_iso) VALUES (:id, :name, :phone, :email, :type, :ref, :msg, :d)");
+            foreach ($newData['contributions'] as $ct) {
+                $ctStmt->execute([
+                    ':id' => $ct['id'] ?? ('ct-' . uniqid()),
+                    ':name' => $ct['name'] ?? '',
+                    ':phone' => $ct['phone'] ?? '',
+                    ':email' => $ct['email'] ?? '',
+                    ':type' => $ct['type'] ?? 'General',
+                    ':ref' => $ct['ref'] ?? '',
+                    ':msg' => $ct['message'] ?? '',
+                    ':d' => $ct['date'] ?? gmdate('c')
+                ]);
+            }
+        }
+
+        // Update timestamp
+        $time = gmdate('c');
+        $timeStmt = $db->prepare("INSERT OR REPLACE INTO cms_settings (setting_key, setting_value, updated_at) VALUES ('_lastServerUpdate', :v, CURRENT_TIMESTAMP)");
+        $timeStmt->execute([':v' => json_encode($time)]);
+
+        $db->commit();
+
+        // Write secondary JSON backup file
+        @file_put_contents(DATA_FILE, json_encode(readCmsData(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+        return true;
+    } catch (Exception $e) {
+        if (isset($db) && $db->inTransaction()) {
+            $db->rollBack();
+        }
+        error_log('Database write error: ' . $e->getMessage());
         return false;
     }
-    $current = readCmsData();
-
-    // Preserve inbox arrays if not provided
-    $merged = array_merge($current, $newData);
-    if (isset($newData['prayers'])) $merged['prayers'] = $newData['prayers'];
-    if (isset($newData['appointments'])) $merged['appointments'] = $newData['appointments'];
-    if (isset($newData['contributions'])) $merged['contributions'] = $newData['contributions'];
-    $merged['_lastServerUpdate'] = gmdate('c');
-
-    $json = json_encode($merged, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    if ($json === false) return false;
-
-    // Atomic write via temporary file + rename with exclusive flock
-    $tmpFile = DATA_FILE . '.' . uniqid('tmp_', true);
-    $fp = @fopen($tmpFile, 'w');
-    if (!$fp) return false;
-
-    if (flock($fp, LOCK_EX)) {
-        fwrite($fp, $json);
-        fflush($fp);
-        flock($fp, LOCK_UN);
-        fclose($fp);
-        return @rename($tmpFile, DATA_FILE);
-    }
-
-    fclose($fp);
-    @unlink($tmpFile);
-    return false;
 }
 
 // ==========================================
@@ -227,15 +523,38 @@ function getJsonInput() {
 // API ENDPOINTS ROUTING
 // ==========================================
 
-// 0. HEALTH / STATUS: GET /api/server-status
+// 0. HEALTH & DATABASE STATUS: GET /api/server-status
 if ($route === 'server-status' && $method === 'GET') {
-    echo json_encode([
-        'status' => 'online',
-        'timestamp' => round(microtime(true) * 1000),
-        'message' => 'Servidor El Faro CMS activo y en línea (PHP/SiteGround).',
-        'engine' => 'PHP ' . PHP_VERSION,
-        'storage' => 'SSD Persistente SiteGround 24/7'
-    ]);
+    try {
+        $db = getDb();
+        $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $imgCount = $db->query("SELECT COUNT(*) FROM gallery_images")->fetchColumn();
+        $prCount = $db->query("SELECT COUNT(*) FROM prayers")->fetchColumn();
+        $apCount = $db->query("SELECT COUNT(*) FROM appointments")->fetchColumn();
+        $ctCount = $db->query("SELECT COUNT(*) FROM contributions")->fetchColumn();
+
+        echo json_encode([
+            'status' => 'online',
+            'timestamp' => round(microtime(true) * 1000),
+            'message' => 'Servidor El Faro CMS activo y en línea con Base de Datos SQL.',
+            'engine' => 'PHP ' . PHP_VERSION,
+            'database' => strtoupper($driver) . ' (SQL Relacional)',
+            'storage' => 'Base de Datos SQL Persistente 24/7 en SiteGround',
+            'stats' => [
+                'galleryImages' => (int)$imgCount,
+                'prayers' => (int)$prCount,
+                'appointments' => (int)$apCount,
+                'contributions' => (int)$ctCount
+            ]
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'online',
+            'timestamp' => round(microtime(true) * 1000),
+            'engine' => 'PHP ' . PHP_VERSION,
+            'databaseError' => $e->getMessage()
+        ]);
+    }
     exit;
 }
 
@@ -295,11 +614,12 @@ if ($route === 'cms-data' && $method === 'POST') {
         echo json_encode([
             'status' => 'success',
             'serverSynced' => true,
-            'message' => 'Datos guardados en disco permanentemente en SiteGround.'
+            'database' => 'SQL',
+            'message' => 'Datos guardados en la Base de Datos SQL permanentemente en SiteGround.'
         ]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Error interno al escribir datos del CMS en el servidor.']);
+        echo json_encode(['error' => 'Error interno al escribir datos en la base de datos SQL.']);
     }
     exit;
 }
@@ -378,26 +698,30 @@ if ($route === 'inbox/prayer' && $method === 'POST') {
         exit;
     }
 
-    $safePrayer = [
-        'id' => 'pr-' . round(microtime(true) * 1000),
-        'name' => $name,
-        'phone' => $phone,
-        'email' => $email,
-        'request' => $request,
-        'date' => gmdate('c'),
-        'status' => 'Pendiente'
-    ];
+    $id = 'pr-' . round(microtime(true) * 1000);
+    $dateIso = gmdate('c');
 
-    $current = readCmsData();
-    $current['prayers'] = $current['prayers'] ?? [];
-    array_unshift($current['prayers'], $safePrayer);
-    saveCmsData($current);
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("INSERT INTO prayers (id, name, phone, email, request, date_iso, status) VALUES (:id, :name, :phone, :email, :req, :d, 'Pendiente')");
+        $stmt->execute([
+            ':id' => $id,
+            ':name' => $name,
+            ':phone' => $phone,
+            ':email' => $email,
+            ':req' => $request,
+            ':d' => $dateIso
+        ]);
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Petición de oración recibida con bendición.',
-        'id' => $safePrayer['id']
-    ]);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Petición de oración guardada en la base de datos con bendición.',
+            'id' => $id
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error al registrar la petición en la base de datos.']);
+    }
     exit;
 }
 
@@ -416,26 +740,29 @@ if ($route === 'inbox/appointment' && $method === 'POST') {
         exit;
     }
 
-    $safeApp = [
-        'id' => 'app-' . round(microtime(true) * 1000),
-        'name' => $name,
-        'email' => $email,
-        'phone' => $phone,
-        'date' => $date,
-        'time' => $time,
-        'status' => 'Pendiente'
-    ];
+    $id = 'app-' . round(microtime(true) * 1000);
 
-    $current = readCmsData();
-    $current['appointments'] = $current['appointments'] ?? [];
-    array_unshift($current['appointments'], $safeApp);
-    saveCmsData($current);
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("INSERT INTO appointments (id, name, email, phone, date_val, time_val, status) VALUES (:id, :name, :email, :phone, :d, :t, 'Pendiente')");
+        $stmt->execute([
+            ':id' => $id,
+            ':name' => $name,
+            ':email' => $email,
+            ':phone' => $phone,
+            ':d' => $date,
+            ':t' => $time
+        ]);
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Cita pastoral agendada con éxito.',
-        'id' => $safeApp['id']
-    ]);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Cita pastoral agendada en la base de datos con éxito.',
+            'id' => $id
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error al agendar la cita en la base de datos.']);
+    }
     exit;
 }
 
@@ -455,27 +782,32 @@ if ($route === 'inbox/contribution' && $method === 'POST') {
         exit;
     }
 
-    $safeContribution = [
-        'id' => 'ct-' . round(microtime(true) * 1000),
-        'name' => $name,
-        'phone' => $phone,
-        'email' => $email,
-        'type' => $type ?: 'General',
-        'ref' => $ref,
-        'message' => $message,
-        'date' => gmdate('c')
-    ];
+    $id = 'ct-' . round(microtime(true) * 1000);
+    $dateIso = gmdate('c');
 
-    $current = readCmsData();
-    $current['contributions'] = $current['contributions'] ?? [];
-    array_unshift($current['contributions'], $safeContribution);
-    saveCmsData($current);
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("INSERT INTO contributions (id, name, phone, email, type, ref, message, date_iso) VALUES (:id, :name, :phone, :email, :type, :ref, :msg, :d)");
+        $stmt->execute([
+            ':id' => $id,
+            ':name' => $name,
+            ':phone' => $phone,
+            ':email' => $email,
+            ':type' => $type ?: 'General',
+            ':ref' => $ref,
+            ':msg' => $message,
+            ':d' => $dateIso
+        ]);
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Reporte de aporte recibido. ¡Muchas gracias!',
-        'id' => $safeContribution['id']
-    ]);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Reporte de aporte guardado en la base de datos. ¡Muchas gracias!',
+            'id' => $id
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error al registrar el aporte en la base de datos.']);
+    }
     exit;
 }
 
