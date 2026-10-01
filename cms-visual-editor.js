@@ -107,57 +107,129 @@
     `;
 
     modal.innerHTML = `
-      <div style="background: #041C2C; border: 1px solid #FFD200; border-radius: 24px; width: 100%; max-width: 520px; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); text-align: left; position: relative;">
-        <h3 style="color: #FFD200; margin-top: 0; margin-bottom: 8px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px;">
+      <div style="background: linear-gradient(160deg, #041C2C 0%, #021016 100%); border: 1px solid rgba(255,220,51,0.35); border-radius: 24px; width: 100%; max-width: 520px; padding: 32px; box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 40px rgba(255,220,51,0.08); text-align: left; position: relative; box-sizing: border-box;">
+        <h3 style="color: #FFD200; margin-top: 0; margin-bottom: 6px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif;">
           <i class="fas fa-camera"></i> Cambiar Fotografía en Vivo
         </h3>
-        <p style="color: #a0aec0; font-size: 0.88rem; margin-bottom: 25px;">Selecciona una imagen desde tu dispositivo o ingresa un enlace directo.</p>
+        <p style="color: #a0aec0; font-size: 0.88rem; margin-bottom: 24px;">Selecciona una imagen desde tu dispositivo o ingresa un enlace directo.</p>
 
-        <!-- Preview Box -->
-        <div style="background: rgba(2, 16, 26, 0.7); border: 1px solid rgba(255,210,0,0.25); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 20px;">
-          <span style="font-size: 0.75rem; color: #a0aec0; display: block; margin-bottom: 8px; text-transform: uppercase;">Vista Previa de la Fotografía</span>
-          <img id="cms-img-modal-preview" src="" alt="Vista Previa" style="max-height: 160px; width: auto; border-radius: 12px; object-fit: contain; display: inline-block;">
-        </div>
-
-        <!-- Option A: File Upload -->
+        <!-- Option A: Luxury Dropzone -->
         <div style="margin-bottom: 20px;">
-          <label style="display: block; color: #ffffff; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-upload" style="color: #FFD200; margin-right: 6px;"></i> 1. Subir Foto desde Celular / Computadora</label>
-          <input type="file" id="cms-img-modal-file" accept="image/*" style="width: 100%; background: rgba(7,42,66,0.5); border: 1px solid rgba(255,210,0,0.3); border-radius: 12px; padding: 10px; color: #ffffff; font-size: 0.85rem; cursor: pointer;">
+          <label style="display: block; color: #FFD200; font-size: 0.88rem; font-weight: 700; margin-bottom: 10px;">
+            <i class="fas fa-cloud-upload-alt"></i> 1. Subir Foto desde tu Dispositivo (Recomendado)
+          </label>
+          <div id="ve-dropzone" style="background: linear-gradient(145deg, rgba(2,16,26,0.8) 0%, rgba(4,28,44,0.7) 100%); border: 2px dashed rgba(255,220,51,0.35); border-radius: 16px; padding: 20px 22px; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; width: 100%;">
+            <input type="file" id="cms-img-modal-file" accept="image/*" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div id="ve-dropzone-icon" style="width: 48px; height: 48px; border-radius: 14px; background: rgba(255,220,51,0.12); border: 1px solid rgba(255,220,51,0.3); color: #FFD200; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+                <i class="fas fa-image"></i>
+              </div>
+              <div style="flex-grow: 1; overflow: hidden;">
+                <div id="ve-dropzone-main" style="color: #ffffff; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Haz clic para seleccionar o arrastra una foto</div>
+                <div id="ve-dropzone-sub" style="color: #a0aec0; font-size: 0.8rem; margin-top: 3px;">Admite archivos JPG, PNG, WEBP (Hasta 15 MB)</div>
+              </div>
+              <button type="button" style="background: linear-gradient(135deg, #FFDC33 0%, #E6B800 100%); color: #041C2C; border: none; padding: 9px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 6px; pointer-events: none; flex-shrink: 0; box-shadow: 0 4px 12px rgba(255,220,51,0.25); cursor: pointer;">
+                <i class="fas fa-folder-open"></i> Explorar
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview Card -->
+          <div id="ve-preview-card" style="display: none; margin-top: 12px;">
+            <div style="background: rgba(2,16,26,0.85); padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,220,51,0.35); display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+              <img id="cms-img-modal-preview" src="" alt="Vista previa" style="width: 65px; height: 65px; border-radius: 12px; object-fit: cover; border: 1px solid #FFD200; flex-shrink: 0;">
+              <div style="flex-grow: 1; overflow: hidden;">
+                <div id="ve-preview-name" style="color: #ffffff; font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">imagen.jpg</div>
+                <div id="ve-preview-size" style="color: #a0aec0; font-size: 0.8rem; margin-top: 2px;"></div>
+                <div style="color: #48bb78; font-size: 0.78rem; font-weight: 600; margin-top: 3px;"><i class="fas fa-check-circle"></i> Lista para aplicar</div>
+              </div>
+              <button type="button" id="ve-clear-btn" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Quitar imagen">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Option B: URL Input -->
         <div style="margin-bottom: 28px;">
-          <label style="display: block; color: #ffffff; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;"><i class="fas fa-link" style="color: #FFD200; margin-right: 6px;"></i> 2. O Enlace / Ruta de Imagen</label>
-          <input type="text" id="cms-img-modal-url" placeholder="assets/img/foto.jpg o https://..." style="width: 100%; background: rgba(7,42,66,0.5); border: 1px solid rgba(255,210,0,0.3); border-radius: 12px; padding: 12px 14px; color: #ffffff; font-size: 0.9rem; outline: none; box-sizing: border-box;">
+          <label style="display: block; color: #FFD200; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">
+            <i class="fas fa-link"></i> 2. O ingresa Ruta / URL de la Imagen
+          </label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <i class="fas fa-link" style="position: absolute; left: 16px; color: rgba(255,220,51,0.85); font-size: 0.95rem; pointer-events: none;"></i>
+            <input type="text" id="cms-img-modal-url" placeholder="Ej. assets/img/foto.jpg o https://..." style="width: 100%; background: rgba(2,16,26,0.75); border: 1px solid rgba(255,220,51,0.3); border-radius: 12px; padding: 14px 16px 14px 48px; color: #ffffff; font-size: 0.9rem; outline: none; box-sizing: border-box; transition: border-color 0.25s ease;">
+          </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 12px;">
-          <button id="cms-img-modal-cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.25); color: #ffffff; padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer;">Cancelar</button>
-          <button id="cms-img-modal-apply" style="background: linear-gradient(135deg, #FFD200 0%, #FFA500 100%); border: none; color: #041C2C; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255,210,0,0.3);">Aplicar Nueva Foto</button>
+        <div style="display: flex; gap: 12px;">
+          <button id="cms-img-modal-cancel" style="flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease;">Cancelar</button>
+          <button id="cms-img-modal-apply" style="flex: 2; background: linear-gradient(135deg, #FFD200 0%, #E6A800 100%); border: none; color: #041C2C; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 0.95rem; cursor: pointer; box-shadow: 0 8px 20px rgba(255,210,0,0.35); display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="fas fa-check"></i> Aplicar Nueva Foto</button>
         </div>
       </div>
     `;
 
     document.body.appendChild(modal);
 
-    // Modal listeners
+    // Wire dropzone
     const fileInput = document.getElementById('cms-img-modal-file');
     const urlInput = document.getElementById('cms-img-modal-url');
     const preview = document.getElementById('cms-img-modal-preview');
+    const previewCard = document.getElementById('ve-preview-card');
+    const dropzone = document.getElementById('ve-dropzone');
+    const mainText = document.getElementById('ve-dropzone-main');
+    const subText = document.getElementById('ve-dropzone-sub');
+    const previewName = document.getElementById('ve-preview-name');
+    const previewSize = document.getElementById('ve-preview-size');
+    const clearBtn = document.getElementById('ve-clear-btn');
 
-    fileInput.addEventListener('change', function (e) {
-      if (e.target.files && e.target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (ev) {
-          preview.src = ev.target.result;
-          urlInput.value = ev.target.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-      }
+    function clearFileSelection() {
+      fileInput.value = '';
+      if (previewCard) previewCard.style.display = 'none';
+      if (mainText) mainText.textContent = 'Haz clic para seleccionar o arrastra una foto';
+      if (subText) subText.textContent = 'Admite archivos JPG, PNG, WEBP (Hasta 15 MB)';
+      if (dropzone) { dropzone.style.borderColor = 'rgba(255,220,51,0.35)'; dropzone.style.borderStyle = 'dashed'; }
+    }
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    ['dragenter','dragover'].forEach(ev => {
+      dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.style.borderColor = '#FFD200'; dropzone.style.boxShadow = '0 0 20px rgba(255,220,51,0.2)'; });
+    });
+    ['dragleave','drop'].forEach(ev => {
+      dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.style.borderColor = 'rgba(255,220,51,0.35)'; dropzone.style.boxShadow = ''; });
+    });
+    dropzone.addEventListener('drop', e => {
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) { fileInput.files = files; fileInput.dispatchEvent(new Event('change')); }
     });
 
-    urlInput.addEventListener('input', function () {
-      preview.src = urlInput.value.trim();
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        if (preview) preview.src = ev.target.result;
+        if (urlInput) urlInput.value = ev.target.result;
+        if (previewCard) previewCard.style.display = 'block';
+        if (previewName) previewName.textContent = file.name;
+        if (previewSize) previewSize.textContent = (file.size / (1024*1024)).toFixed(2) + ' MB';
+        if (mainText) mainText.textContent = file.name;
+        if (subText) subText.textContent = 'Haz clic o arrastra para cambiar';
+        if (dropzone) { dropzone.style.borderColor = '#48bb78'; dropzone.style.borderStyle = 'solid'; }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    clearBtn.addEventListener('click', clearFileSelection);
+
+    urlInput.addEventListener('input', function() {
+      const val = urlInput.value.trim();
+      if (val && !val.startsWith('data:')) {
+        if (preview) preview.src = val;
+        if (previewCard) previewCard.style.display = 'block';
+        if (previewName) previewName.textContent = val.split('/').pop() || 'URL externa';
+        if (previewSize) previewSize.textContent = 'Enlace remoto / Ruta';
+      }
     });
 
     document.getElementById('cms-img-modal-cancel').addEventListener('click', closeImageModal);
