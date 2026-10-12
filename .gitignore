@@ -6,3 +6,7 @@ cms-data.json.tmp
 .DS_Store
 Thumbs.db
 .server_secret
+test.html
+live_site.html
+*.ps1
+*.py
